@@ -15,8 +15,9 @@ namespace Domain.Entities
 
         public required string BuyerId { get; set; }
 
-        public int AuctionSessionId { get; set; }
+        public required string SellerId { get; set; }
 
+        public int AuctionSessionId { get; set; }
         public double Total {  get; set; }
 
         public DateTime DateOrder {  get; set; }
@@ -26,6 +27,8 @@ namespace Domain.Entities
         public virtual Product? Product { get; set; }
 
         public virtual Buyer? Buyer { get; set; }
+
+        public virtual Seller? Seller { get; set; }
 
         public virtual AuctionSession? AuctionSession { get; set; }
 

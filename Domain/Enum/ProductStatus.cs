@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Enum
 {
-    public enum PaymentMethod
+    public enum ProductStatus
     {
-        CreditCard,
-        Paypal,
-        VNPay,
-        COD
+        Pending,
+        Approved,
+        Sold
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,19 @@ namespace Domain.Entities
 
         public double Amount { get; set; }
 
-        public string? PaymentMethod { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
 
-        public 
+        public PaymentStatus PaymentStatus { get; set; }
+
+        public string? Content { get; set; }
+
+        public string? Code { get; set; }
+
+        public DateTime DatePayment { get; set; }
+
+        public virtual Order? Order { get; set; }
+
+        public virtual Buyer? Buyer { get; set; }
+
     }
 }

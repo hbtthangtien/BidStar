@@ -13,7 +13,6 @@ namespace Domain.Entities
         public string? Fullname { get; set; }
         public string? Address { get; set; }
         public double? Balance { get; set; }
-        public virtual Profile? Profile { get; set; }
         public virtual Seller? Seller { get; set; }
         public virtual Buyer? Buyer { get; set; }
     }

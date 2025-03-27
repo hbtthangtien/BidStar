@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constant\" />
     <Folder Include="Configs\" />
+    <Folder Include="ExceptionCustom\" />
   </ItemGroup>
 
   <ItemGroup>
