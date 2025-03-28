@@ -59,8 +59,10 @@ namespace Infrustucture.DIConfig
         }
         public static void InitialValueConfig(this IServiceCollection services,IConfiguration configuration)
         {
-            var config = configuration.GetSection("EmailConfig");
-            services.Configure<EmailConfig>(config);
+            var emailConfig = configuration.GetSection("EmailConfig");
+            var vnpayConfig = configuration.GetSection("VnpayConfig");
+            services.Configure<EmailConfig>(emailConfig);
+            services.Configure<VnpayConfig>(vnpayConfig);
         }
     }
 }
