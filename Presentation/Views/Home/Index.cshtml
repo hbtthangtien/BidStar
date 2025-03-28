@@ -1,8 +1,32 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Domain.Constant
+@{
+    ViewData["Title"] = "Home";
+    var userName = User.Identity?.Name ?? "Guest";
+    var userRole = User.IsInRole(UserRole.SELLER) ? UserRole.SELLER : User.IsInRole(UserRole.BUYER) ? UserRole.BUYER : "Unknown";
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);">
+    <div class="text-center text-white px-4 py-5" style="max-width: 700px;">
+        <h1 class="display-4 fw-bold mb-3">🎉 Welcome to AuctionSite!</h1>
+
+        @if (isAuthenticated)
+        {
+            <p class="lead mb-2">👤 <strong>@userName</strong></p>
+            <p class="mb-4">✅ Role: <strong>@userRole</strong></p>
+
+            <div class="d-flex justify-content-center gap-3 mb-3">
+                <a asp-controller="Auction" asp-action="MyAuctions" class="btn btn-outline-light fw-bold">📦 My Auctions</a>
+                <a asp-controller="Auction" asp-action="MyBids" class="btn btn-outline-light fw-bold">🎯 My Bids</a>
+            </div>
+        }
+        else
+        {
+            <p class="lead mb-4">Buy and sell unique items in live auction sessions. Get started by registering or browsing upcoming auctions.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-controller="Auction" asp-action="Session" class="btn btn-warning btn-lg fw-bold px-4">View Auctions</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg fw-bold px-4">Join Now</a>
+            </div>
+        }
+    </div>
 </div>
