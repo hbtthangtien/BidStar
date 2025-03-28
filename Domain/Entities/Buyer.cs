@@ -16,7 +16,8 @@ namespace Domain.Entities
 
         public virtual ICollection<Joinning> Joinnings { get; set; } = new HashSet<Joinning>()!;
 
+        public virtual Account? Account { get; set; }
 
-
+        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>()!;  
     }
 }

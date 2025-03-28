@@ -1,3 +1,6 @@
+using Infrustucture.DIConfig;
+using Persistence.DatabaseConfig;
+
 namespace Presentation
 {
     public class Program
@@ -8,7 +11,11 @@ namespace Presentation
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            builder.Services.AddDatabaseConfig(builder.Configuration);
+            builder.Services.AddIdentityConfig();
+            builder.Services.AddApplicationService();
+            builder.Services.AddPersistence();
+            builder.Services.AddOtherService();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -21,11 +28,8 @@ namespace Presentation
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

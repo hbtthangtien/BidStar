@@ -10,7 +10,7 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
 
-        public int AuctionSessionId { get; set; }
+        public int? AuctionSessionId { get; set; }
 
         public required string BuyerId { get; set; }
 
