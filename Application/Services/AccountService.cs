@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Account;
+using Application.Interface.IExternalService;
 using Application.Interface.IServices;
 using Application.UnitOfWork;
 using AutoMapper;
@@ -15,15 +16,33 @@ namespace Application.Services
 {
     public class AccountService : Service, IAccountService
     {
-        public AccountService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly ISenderService _sender;
+        public AccountService(IUnitOfWork unitOfWork, IMapper mapper, ISenderService sender) : base(unitOfWork, mapper)
         {
+            _sender = sender;
         }
 
-        public async Task<CreateAccountDTO> CreateAccount(CreateAccountDTO dto)
+        public async Task ConfirmEmail(string UserId, string token)
+        {
+            var User = await _unitOfWork.Accounts.UserManager.FindByIdAsync(UserId)
+                ?? throw new Exception("User is not existed!");
+            var confirmEmail = await _unitOfWork.Accounts.UserManager.ConfirmEmailAsync(User, token);
+            if(!confirmEmail.Succeeded)
+            {
+                throw new Exception("Token is not valid!!!");
+            }
+        }
+
+        public async Task<CreateAccountDTO> CreateAccountAsync(CreateAccountDTO dto)
         {
             if(dto.Password == dto.ConfirmPassword)
             {
-                var entityUser = _mapper.Map<Account>(dto);
+                var entityUser = new Account
+                {
+                    UserName = dto.UserName,
+                    Email = dto.Email,
+                    Balance = 0
+                };
                 var create = await _unitOfWork.Accounts.UserManager.CreateAsync(entityUser, dto.Password!);
                 if (!create.Succeeded)
                 {
@@ -31,6 +50,7 @@ namespace Application.Services
                 }
                 await _unitOfWork.Accounts.UserManager
                     .AddToRoleAsync(entityUser, (dto.UserRole == Domain.Enum.UserRole.Buyer) ? UserRole.SELLER : UserRole.BUYER);
+                await SendEmailConfirmAsync(entityUser);
                 return dto;
             }
             else
@@ -38,6 +58,14 @@ namespace Application.Services
                 throw new CreateException("Password and Confirm password is not correct!");
             }
             
+        }
+        public async Task SendEmailConfirmAsync(Account account)
+        {
+            string token = await _unitOfWork.Accounts.UserManager.GenerateEmailConfirmationTokenAsync(account);
+            UriBuilder uriBuilder = LinkConstant.UriBuilder(account.Id, token, "confirm-email");
+            var link = uriBuilder.ToString();
+            var Body = EmailBody.CONFIRM_EMAIL(account.Email!,link);
+            await _sender.SendMailAsync(EmailSubject.CONFIRM_EMAIL, EmailBody.CONFIRM_EMAIL(account.Email!,link), account.Email!);
         }
     }
 }

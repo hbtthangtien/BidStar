@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = ViewData["Error"] != null ? "Email Confirmation Failed" : "Email Confirmed";
+}
+
+<div class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #00c9ff, #92fe9d);">
+    <div class="card shadow-lg p-5 text-center" style="max-width: 500px; width: 100%; border-radius: 1rem;">
+        @if (ViewData["Error"] != null)
+        {
+            <div class="text-danger mb-4">
+                <i class="bi bi-x-circle-fill" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Email Verification Failed</h3>
+            <p class="text-muted mb-4">@ViewData["Error"]</p>
+            <a asp-action="Register" asp-controller="Account" class="btn btn-outline-danger fw-bold px-4">Back to Register</a>
+        }
+        else
+        {
+            <div class="text-success mb-4">
+                <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+            </div>
+            <h3 class="fw-bold mb-3">Email Verified Successfully!</h3>
+            <p class="text-muted mb-4">Your email has been confirmed. You can now log in and start using the platform.</p>
+            <a asp-action="Login" asp-controller="Account" class="btn btn-primary fw-bold px-4">Go to Login</a>
+        }
+    </div>
+</div>

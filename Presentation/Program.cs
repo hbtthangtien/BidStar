@@ -16,6 +16,7 @@ namespace Presentation
             builder.Services.AddApplicationService();
             builder.Services.AddPersistence();
             builder.Services.AddOtherService();
+            builder.Services.InitialValueConfig(builder.Configuration);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

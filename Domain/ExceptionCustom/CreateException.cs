@@ -13,7 +13,7 @@ namespace Domain.ExceptionCustom
         public CreateException()
         {
         }
-        public CreateException(IEnumerable<IdentityError> errors) : base(string.Join(";", errors.Select(e =>$"{e.Description}")))
+        public CreateException(IEnumerable<IdentityError> errors) : base(string.Join("\n", errors.Select(e =>$"{e.Description}")))
         {
             
         }

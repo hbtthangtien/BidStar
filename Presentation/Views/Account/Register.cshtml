@@ -8,7 +8,7 @@
         <h3 class="text-center mb-4 fw-bold">📝 Create Your Account</h3>
         <form asp-action="Register" method="post">
             <div class="mb-3">
-                <label asp-for="UserName" class="form-label">Full Name</label>
+                <label asp-for="UserName" class="form-label">Username</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
                     <input type="text" class="form-control" asp-for="UserName" required />
@@ -43,6 +43,10 @@
                     <option value="1">Seller</option>
                 </select>
             </div>
+            @if (ViewData["ErrorMessage"] != null)
+            {
+                <p style="color:red">@ViewData["ErrorMessage"]</p>
+            }
             <button type="submit" class="btn btn-success w-100 fw-bold">Register</button>
         </form>
         <p class="mt-3 text-center text-white">

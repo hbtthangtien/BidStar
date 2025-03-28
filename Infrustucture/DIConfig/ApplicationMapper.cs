@@ -13,7 +13,7 @@ namespace Infrustucture.DIConfig
     {
         public ApplicationMapper()
         {
-            CreateMap<CreateAccountDTO,Account>().ReverseMap();
+           
         }
     }
 }

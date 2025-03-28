@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Account;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace Application.Interface.IServices
 {
     public interface IAccountService
     {
-        public Task<CreateAccountDTO> CreateAccount(CreateAccountDTO dto);
+        public Task<CreateAccountDTO> CreateAccountAsync(CreateAccountDTO dto);
+
+        public Task ConfirmEmail(string UserId, string token);
+
+        public Task SendEmailConfirmAsync(Account account);
     }
 }
