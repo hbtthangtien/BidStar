@@ -2,6 +2,7 @@
 using Application.Interface.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -18,16 +19,19 @@ namespace Presentation.Controllers
         {
             return RedirectToAction("Login");
         }
+
         [HttpGet]
         public IActionResult Register()
         {
             return View(new CreateAccountDTO());
         }
+
         [HttpGet]
         public IActionResult Login()
         {
             return View(new LoginDTORequest());
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(CreateAccountDTO dto)
         {
@@ -42,6 +46,7 @@ namespace Presentation.Controllers
             }
             
         }
+
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTORequest dto)
         {
@@ -76,6 +81,15 @@ namespace Presentation.Controllers
         {
             await _authenticateService.Logout();
             return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var UserId = HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+            var profile = await _accountService.GetProfileAsync(UserId);
+            return View(profile);
         }
     }
 }

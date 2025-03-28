@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Account;
+using Application.DTOs.Payment;
 using AutoMapper;
 using Domain.Entities;
 using System;
@@ -13,7 +14,7 @@ namespace Infrustucture.DIConfig
     {
         public ApplicationMapper()
         {
-           
+           CreateMap<PaymentDTO,Payment>().ReverseMap();
         }
     }
 }

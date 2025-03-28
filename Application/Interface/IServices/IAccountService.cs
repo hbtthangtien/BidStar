@@ -1,4 +1,5 @@
 ﻿using Application.DTOs.Account;
+using AutoMapper;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,7 @@ namespace Application.Interface.IServices
         public Task ConfirmEmail(string UserId, string token);
 
         public Task SendEmailConfirmAsync(Account account);
+
+        public Task<ProfileDTO> GetProfileAsync(string userId);
     }
 }

@@ -8,9 +8,7 @@ namespace Domain.Enum
 {
     public enum PaymentMethod
     {
-        CreditCard,
-        Paypal,
-        VNPay,
-        COD
+        Deposit,
+        Withdraw
     }
 }

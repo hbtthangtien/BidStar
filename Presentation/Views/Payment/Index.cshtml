@@ -1,0 +1,76 @@
+﻿@using Application.DTOs.Payment
+@model IEnumerable<PaymentDTO>
+@{
+    ViewData["Title"] = "Balance History";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white text-center">
+                    <h4 class="mb-0">📄 Balance Transaction History</h4>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-light text-center">You have no balance transactions yet.</div>
+                    }
+                    else
+                    {
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Amount (VND)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var tx in Model)
+                                {
+                                    <tr>
+                                        <td>@tx.DatePayment.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            @if (tx.PaymentMethod == Domain.Enum.PaymentMethod.Deposit)
+                                            {
+                                                <span class="text-success fw-bold">➕ Deposit</span>
+                                            }
+                                            else if (tx.PaymentMethod == Domain.Enum.PaymentMethod.Withdraw)
+                                            {
+                                                <span class="text-danger fw-bold">➖ Withdraw</span>
+                                            }
+                                            else
+                                            {
+                                                @tx.PaymentStatus
+                                            }
+                                        </td>
+                                        <td>@String.Format("{0:N0}", tx.Amount)</td>
+                                        <td>
+                                            @if (tx.PaymentStatus == Domain.Enum.PaymentStatus.Paid)
+                                            {
+                                                <span class="badge bg-success">Paid</span>
+                                            }
+                                            else if (tx.PaymentStatus == Domain.Enum.PaymentStatus.Pending)
+                                            {
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Failed</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    <div class="text-center mt-4">
+                        <a asp-controller="Account" asp-action="Profile" class="btn btn-secondary">← Back to Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,26 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Entities
+namespace Application.DTOs.Payment
 {
-    public class Payment
+    public class PaymentDTO
     {
-        public int Id { get; set; } 
-
-        public required string BuyerId { get; set; }
-
         public double Amount { get; set; }
 
         public PaymentMethod PaymentMethod { get; set; }
 
         public PaymentStatus PaymentStatus { get; set; }
 
-        public string? Content { get; set; }
+        public string Content { get; set; }
 
-        public string? Code { get; set; }
+        public string Code { get; set; }
 
         public DateTime DatePayment { get; set; }
-        public virtual Buyer? Buyer { get; set; }
 
     }
 }

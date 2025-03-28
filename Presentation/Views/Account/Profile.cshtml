@@ -1,0 +1,56 @@
+﻿@using Application.DTOs.Account
+@{
+    ViewData["Title"] = "Your Profile";
+}
+@model ProfileDTO
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">👤 Your Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Profile" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" asp-for="Username" readonly/>
+                        </div>                   
+                        <div class="mb-3">
+                            <label class="form-label" asp-for="Email">Email</label>
+                            <input type="email" class="form-control" asp-for="Email" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Current Balance</label>
+                            <input type="text" class="form-control" asp-for="Balance" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" asp-for="Address">Address</label>
+                            <input type="text" class="form-control" asp-for="Address" />
+                        </div>
+                        <button type="submit" class="btn btn-success">💾 Save Changes</button>
+                    </form>
+
+                    <div class="mt-4">
+                        <a asp-controller="Payment" asp-action="Index" class="btn btn-outline-info w-100">📄 View Balance Payment History</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h5 class="mb-0">➕ Add Funds</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="RechargeBalance" asp-controller="Payment" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Amount (VND)</label>
+                            <input type="number" class="form-control" name="Amount" min="1000" step="1000" required />
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold">Thanh toán qua VNPAY</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

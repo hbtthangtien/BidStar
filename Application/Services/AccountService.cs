@@ -50,6 +50,17 @@ namespace Application.Services
                 }
                 await _unitOfWork.Accounts.UserManager
                     .AddToRoleAsync(entityUser, (dto.UserRole == Domain.Enum.UserRole.Buyer) ? UserRole.SELLER : UserRole.BUYER);
+                if(dto.UserRole == Domain.Enum.UserRole.Buyer)
+                {
+                    var buyer = new Buyer { BuyerId = entityUser.Id };
+                    await _unitOfWork.Buyers.AddAsync(buyer);
+                }
+                else
+                {
+                    var seller = new Seller { AccountId = entityUser.Id };
+                    await _unitOfWork.Sellers.AddAsync (seller);
+                }
+                await _unitOfWork.CommitAsync();
                 await SendEmailConfirmAsync(entityUser);
                 return dto;
             }
@@ -59,6 +70,21 @@ namespace Application.Services
             }
             
         }
+
+        public async Task<ProfileDTO> GetProfileAsync(string userId)
+        {
+            var user = await _unitOfWork.Accounts.UserManager.FindByIdAsync(userId);
+            var profile = new ProfileDTO
+            {
+                Address = user.Address,
+                Balance = (double)user.Balance!,
+                Email = user.Email,
+                Username = user.UserName
+            };
+            return profile;
+
+        }
+
         public async Task SendEmailConfirmAsync(Account account)
         {
             string token = await _unitOfWork.Accounts.UserManager.GenerateEmailConfirmationTokenAsync(account);

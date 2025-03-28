@@ -56,6 +56,11 @@ namespace Infrustucture.DIConfig
         {
             services.AddAutoMapper(typeof(ApplicationMapper));
             services.AddScoped<ISenderService,EmailService>();
+            services.AddScoped<IVnpayService, VnpayService>();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
         }
         public static void InitialValueConfig(this IServiceCollection services,IConfiguration configuration)
         {

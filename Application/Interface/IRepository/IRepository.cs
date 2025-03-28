@@ -17,5 +17,7 @@ namespace Application.Interface.IRepository
         public Task BeginTransactionAsync();
         public Task CommitTransactionAsync();
         public Task RollbackTransactionAsync();
+
+        public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression);
     }
 }

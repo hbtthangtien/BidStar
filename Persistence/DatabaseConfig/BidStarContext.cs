@@ -161,10 +161,7 @@ namespace Persistence.DatabaseConfig
             {
                 entity.Property(e => e.Id)
                 .UseIdentityColumn(1);
-                entity.HasOne(e => e.Order)
-                    .WithOne()
-                    .HasForeignKey<Payment>(e => e.OrderId);
-
+               
                 entity.HasOne(e => e.Buyer)
                     .WithMany(e => e.Payments)
                     .HasForeignKey(e => e.BuyerId);
