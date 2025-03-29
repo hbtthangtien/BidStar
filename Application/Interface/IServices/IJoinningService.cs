@@ -8,5 +8,6 @@ namespace Application.Interface.IServices
 {
     public interface IJoinningService
     {
+        public Task JoinningSession(string buyerId, int sessionId);
     }
 }

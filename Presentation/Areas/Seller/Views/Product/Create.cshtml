@@ -1,0 +1,57 @@
+﻿@using Application.DTOs.Category
+@using Application.DTOs.Product
+@model ProductDTOCreate
+@{
+    ViewData["Title"] = "Add New Product";
+    var categories = ViewBag.Categories as List<CategoryDTO>;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">➕ Add New Product for Auction</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" asp-controller="product" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Product Name</label>
+                            <input asp-for="Name" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StartPrice" class="form-label">Starting Price (VND)</label>
+                            <input asp-for="StartPrice" class="form-control" type="number" min="1000" step="1000" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CategoryId" class="form-label">Category</label>
+                            <select asp-for="CategoryId" class="form-select">
+                                <option value="1">-- Select Category --</option>
+                                @foreach(var i in categories)
+                                {
+                                    <option value="@i.Id">-@i.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Product Image</label>
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 fw-bold">
+                            <i class="bi bi-upload"></i> Submit Product
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

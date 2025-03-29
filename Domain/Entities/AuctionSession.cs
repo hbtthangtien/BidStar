@@ -12,6 +12,8 @@ namespace Domain.Entities
         public int Id { get; set; }
 
         public int? ProductId { get; set; }
+
+        public string SellerId { get; set; }
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
@@ -28,6 +30,8 @@ namespace Domain.Entities
         public virtual ICollection<Joinning> Joinnings { get; set; } = new List<Joinning>()!;
 
         public virtual ICollection<Bid> Bids { get; set; } = new List<Bid>()!;
+
+        public virtual Seller? Seller { get; set; }
 
     }
 }

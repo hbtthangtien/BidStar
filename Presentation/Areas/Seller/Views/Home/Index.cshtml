@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Seller Dashboard";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">👨‍💼 Seller Dashboard</h2>
+        <p class="text-muted">Manage your auction listings and track your performance.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-square-fill fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Create New Product</h5>
+                    <p class="card-text">Start a new auction by listing a product.</p>
+                    <a asp-controller="AuctionSession" asp-action="CreateList" class="btn btn-outline-primary w-100">➕ Create Auction</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam fs-1 text-success mb-3"></i>
+                    <h5 class="card-title">My Auction Products</h5>
+                    <p class="card-text">View and manage all products you are currently auctioning.</p>
+                    <a asp-controller="AuctionSession" asp-action="index" class="btn btn-outline-success w-100">📦 View Listings</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-bar-chart-line-fill fs-1 text-warning mb-3"></i>
+                    <h5 class="card-title">Auction Stats</h5>
+                    <p class="card-text">Check how your auctions are performing in real-time.</p>
+                    <a asp-controller="Auction" asp-action="Statistics" class="btn btn-outline-warning w-100">📊 View Stats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

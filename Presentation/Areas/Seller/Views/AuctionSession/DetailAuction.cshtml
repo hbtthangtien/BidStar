@@ -1,0 +1,65 @@
+﻿@using Domain.Enum
+@model Application.DTOs.AuctionSession.AuctionSessionDTODetail
+@{
+    ViewData["Title"] = "Auction Session Detail";
+    var product = Model.Product;
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain;">
+        </div>
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-2">🎯 @product.Name</h2>
+            <p class="text-muted mb-2">💬 @product.Description</p>
+            <p class="fs-5 fw-semibold text-success">💰 Start Price: @product.StartPrice.ToString("N0")₫</p>
+            <hr />
+            <p><strong>Session Status:</strong> <span class="badge bg-@GetStatusColor(Model.AuctionSatus)">@Model.AuctionSatus</span></p>
+            <p><strong>Start Time:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>End Time:</strong> @Model.EndTime.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>Participants:</strong> <span id="participantCount">@Model.Joinnings.Count()</span></p>
+            <p><strong>Current Highest Bid:</strong> <span id="currentPrice" class="fw-bold text-primary">@Model.CurrentPrice.ToString("N0")₫</span></p>
+            @if (!string.IsNullOrEmpty(Model.WinnerId))
+            {
+                <p><strong>Current Winner:</strong> <span id="currentWinner">@Model.WinnerId</span></p>
+            }
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-controller="AuctionSession" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle me-1"></i> Back to Session List
+        </a>
+    </div>
+</div>
+
+@functions {
+    string GetStatusColor(AuctionSatus status) => status switch
+    {
+        AuctionSatus.Scheduled => "secondary",
+        AuctionSatus.Ongoing => "success",
+        AuctionSatus.Completed => "dark",
+        _ => "light"
+    };
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script src="~/js/site.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/auctionHub")
+        .build();
+
+    connection.on(" ", function (price, winnerId) {
+        document.getElementById("currentPrice").innerText = parseInt(price).toLocaleString() + "₫";
+        if (document.getElementById("currentWinner")) {
+            document.getElementById("currentWinner").innerText = winnerId;
+        }
+    });
+
+    connection.on("UpdateParticipantCount", function (count) {
+        document.getElementById("participantCount").innerText = count;
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+</script>

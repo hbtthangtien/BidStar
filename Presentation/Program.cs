@@ -1,6 +1,8 @@
 using Infrustucture.DIConfig;
 using Persistence.DatabaseConfig;
-
+using Presentation.BackgroundServices;
+using Microsoft.Extensions.Hosting;
+using Presentation.Hubs;
 namespace Presentation
 {
     public class Program
@@ -17,6 +19,8 @@ namespace Presentation
             builder.Services.AddPersistence();
             builder.Services.AddOtherService();
             builder.Services.InitialValueConfig(builder.Configuration);
+            builder.Services.AddHostedService<AuctionSessionStatusBackground>();
+            builder.Services.AddSignalR();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -31,6 +35,11 @@ namespace Presentation
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
+            app.MapHub<AuctionHub>("/auctionHub");
+            app.MapControllerRoute(
+               name: "seller",
+               pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+               );
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

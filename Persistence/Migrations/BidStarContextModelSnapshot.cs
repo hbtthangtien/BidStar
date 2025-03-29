@@ -125,6 +125,10 @@ namespace Persistence.Migrations
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SellerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -134,6 +138,8 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("SellerId");
 
                     b.HasIndex("WinnerId");
 
@@ -198,6 +204,68 @@ namespace Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Điện tử: điện thoại, laptop, v.v.",
+                            Name = "Electronics"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Thời trang: quần áo, phụ kiện",
+                            Name = "Fashion"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Đồ gia dụng, nội thất, cây cảnh",
+                            Name = "Home & Garden"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Sách, truyện tranh, giáo trình",
+                            Name = "Books"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Vật phẩm sưu tầm, đồ cổ",
+                            Name = "Collectibles"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "Trang sức, đồng hồ",
+                            Name = "Jewelry & Watches"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Description = "Thể thao, dã ngoại",
+                            Name = "Sports & Outdoors"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Mỹ phẩm, chăm sóc sức khỏe",
+                            Name = "Health & Beauty"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "Đồ chơi, mô hình",
+                            Name = "Toys & Hobbies"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "Ô tô, xe máy, xe đạp",
+                            Name = "Vehicles"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Joinning", b =>
@@ -525,12 +593,20 @@ namespace Persistence.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("Domain.Entities.Seller", "Seller")
+                        .WithMany("AuctionSessions")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Buyer", "Winner")
                         .WithMany()
                         .HasForeignKey("WinnerId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Product");
+
+                    b.Navigation("Seller");
 
                     b.Navigation("Winner");
                 });
@@ -741,6 +817,8 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Seller", b =>
                 {
+                    b.Navigation("AuctionSessions");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Products");

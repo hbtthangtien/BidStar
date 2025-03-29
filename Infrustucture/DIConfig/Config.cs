@@ -61,13 +61,16 @@ namespace Infrustucture.DIConfig
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            services.AddSingleton<ICloudinaryService, CloudinaryService>();
         }
         public static void InitialValueConfig(this IServiceCollection services,IConfiguration configuration)
         {
             var emailConfig = configuration.GetSection("EmailConfig");
             var vnpayConfig = configuration.GetSection("VnpayConfig");
+            var cloudinaryConfig = configuration.GetSection("Cloudinary");
             services.Configure<EmailConfig>(emailConfig);
             services.Configure<VnpayConfig>(vnpayConfig);
+            services.Configure<CloudinaryConfig>(cloudinaryConfig);
         }
     }
 }

@@ -12,6 +12,11 @@ namespace Persistence.DatabaseConfig
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
         #region config dbset
         public virtual DbSet<AuctionSession> AuctionSessions { get; set; }
 
@@ -35,8 +40,8 @@ namespace Persistence.DatabaseConfig
 
         #endregion
 
-
-       
+        
+        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -186,7 +191,10 @@ namespace Persistence.DatabaseConfig
                 entity.HasOne(e => e.Account)
                     .WithOne(e => e.Seller)
                     .HasForeignKey<Seller>(e => e.AccountId);
-
+                entity.HasMany(e => e.AuctionSessions)
+                      .WithOne(e => e.Seller)
+                      .HasForeignKey(e => e.SellerId)
+                      .OnDelete(DeleteBehavior.NoAction);
                 entity.HasMany(e => e.Products)
                     .WithOne(e => e.Seller)
                     .HasForeignKey(e => e.SellerId);
@@ -201,6 +209,19 @@ namespace Persistence.DatabaseConfig
                 new IdentityRole { Id = "2", Name = UserRole.SELLER, NormalizedName = UserRole.SELLER},
                 new IdentityRole { Id = "3", Name = UserRole.ADMIN, NormalizedName = UserRole.ADMIN}
                 );
+            builder.Entity<Category>(entity =>
+            {
+                entity.HasData(new Category {Id = 1, Name = "Electronics", Description = "Điện tử: điện thoại, laptop, v.v." });
+                entity.HasData(new Category {Id = 2, Name = "Fashion", Description = "Thời trang: quần áo, phụ kiện" });
+                entity.HasData(new Category {Id = 3, Name = "Home & Garden", Description = "Đồ gia dụng, nội thất, cây cảnh" });
+                entity.HasData(new Category {Id = 4, Name = "Books", Description = "Sách, truyện tranh, giáo trình" });
+                entity.HasData(new Category {Id = 5, Name = "Collectibles", Description = "Vật phẩm sưu tầm, đồ cổ" });
+                entity.HasData(new Category {Id = 6, Name = "Jewelry & Watches", Description = "Trang sức, đồng hồ" });
+                entity.HasData(new Category {Id = 7, Name = "Sports & Outdoors", Description = "Thể thao, dã ngoại" });
+                entity.HasData(new Category {Id = 8, Name = "Health & Beauty", Description = "Mỹ phẩm, chăm sóc sức khỏe" });
+                entity.HasData(new Category {Id = 9, Name = "Toys & Hobbies", Description = "Đồ chơi, mô hình" });
+                entity.HasData(new Category {Id = 10, Name = "Vehicles", Description = "Ô tô, xe máy, xe đạp" });
+            });
         }
 
     }

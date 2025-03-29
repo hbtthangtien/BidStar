@@ -8,7 +8,7 @@ namespace Domain.Enum
 {
     public enum UserRole
     {
-        Buyer,
-        Seller
+        Buyer = 1,
+        Seller =2
     }
 }

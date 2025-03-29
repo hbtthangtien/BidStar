@@ -1,0 +1,84 @@
+﻿@using Domain.Enum
+@model IEnumerable<Application.DTOs.AuctionSession.AuctionSessionDTO>
+@{
+    ViewData["Title"] = "Auction Sessions";
+}
+
+<div class="container py-5">
+    <h2 class="text-center fw-bold mb-4">🔥 Active Auction Sessions</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-hourglass-split"></i> No auction sessions available at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" id="sessionList">
+            @foreach (var session in Model)
+            {
+                <div class="col-md-4" id="session-@session.Id">
+                    <div class="card shadow-sm h-100">
+                        <img src="@session.Product.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover;" alt="@session.Product.Name">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@session.Product.Name</h5>
+                            <p class="card-text text-muted mb-1">⏰ @session.StartTime.ToString("dd/MM/yyyy HH:mm") → @session.EndTime.ToString("HH:mm")</p>
+                            <p class="card-text">💰 Current Price: <strong id="price-@session.Id">@session.CurrentPrice.ToString("N0")₫</strong></p>
+                            <span class="badge bg-@GetStatusColor(session.AuctionSatus) mb-3" id="status-@session.Id">@session.AuctionSatus</span>
+                            <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 Join Session</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <p style="color:red">@ViewData["ErrorMessage"]</p>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const hub = new signalR.HubConnectionBuilder()
+            .withUrl("/auctionHub")
+            .build();
+
+        hub.on("UpdateSessionPrice", function (sessionId, newPrice) {
+            const priceElem = document.getElementById("price-" + sessionId);
+            if (priceElem) {
+                priceElem.innerText = parseInt(newPrice).toLocaleString() + "₫";
+            }
+        });
+
+        hub.on("UpdateSessionStatus", function () {
+            location.reload();
+        });
+        hub.on("addSession", function () {
+            location.reload();
+        });
+        function getStatusColor(status) {
+            switch (status) {
+                case "Opening": return "success";
+                case "Waiting": return "secondary";
+                case "Closed": return "dark";
+                case "Cancelled": return "danger";
+                default: return "light";
+            }
+        }
+
+        hub.start().catch(err => console.error(err.toString()));
+    </script>
+}
+
+@functions {
+    string GetStatusColor(AuctionSatus status) => status switch
+    {
+        AuctionSatus.Scheduled => "secondary",
+        AuctionSatus.Ongoing => "success",
+        AuctionSatus.Completed => "dark",
+        _ => "light"
+    };
+}

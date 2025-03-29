@@ -49,7 +49,7 @@ namespace Application.Services
                     throw new CreateException(create.Errors);
                 }
                 await _unitOfWork.Accounts.UserManager
-                    .AddToRoleAsync(entityUser, (dto.UserRole == Domain.Enum.UserRole.Buyer) ? UserRole.SELLER : UserRole.BUYER);
+                    .AddToRoleAsync(entityUser, (dto.UserRole == Domain.Enum.UserRole.Buyer) ? UserRole.BUYER : UserRole.SELLER);
                 if(dto.UserRole == Domain.Enum.UserRole.Buyer)
                 {
                     var buyer = new Buyer { BuyerId = entityUser.Id };

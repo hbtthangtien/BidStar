@@ -10,6 +10,7 @@ namespace Domain.Enum
     {
         Pending,
         Approved,
-        Sold
+        Sold,
+        Cancelled
     }
 }

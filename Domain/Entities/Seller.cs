@@ -14,6 +14,8 @@ namespace Domain.Entities
 
         public virtual ICollection<Product> Products { get; set; } = new List<Product>()!;
 
-        public virtual ICollection<Order> Orders { get; set; } = new List<Order>()!;    
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>()!;   
+        
+        public virtual ICollection<AuctionSession> AuctionSessions { get; set; } = new List<AuctionSession>()!;
     }
 }
