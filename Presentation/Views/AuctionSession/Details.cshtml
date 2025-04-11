@@ -245,4 +245,7 @@
     connection.on("SetRole",(isHosted)=>{
         console.log(isHosted);
     })
+    connection.on("NewBids",(data)=>{
+        console.log(data);
+    })
 </script>

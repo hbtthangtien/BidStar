@@ -63,5 +63,21 @@ namespace Application.Services
             var data =  await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId);
             return data.SellerId;
         }
+
+        public async Task UpdateCurrentPrice(int auctionId, double price)
+        {
+            var auction = await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId);
+            auction.CurrentPrice = price;
+            _unitOfWork.AuctionSessions.UpdateAsync(auction);
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task UpdateWinner(int auctionId, string winnerId)
+        {
+            var auction = await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId);
+            auction.WinnerId = winnerId;
+            _unitOfWork.AuctionSessions.UpdateAsync(auction);
+            await _unitOfWork.CommitAsync();
+        }
     }
 }

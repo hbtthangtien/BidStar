@@ -3,6 +3,7 @@ using Application.Interface.IServices;
 using Application.UnitOfWork;
 using AutoMapper;
 using Domain.Entities;
+using Domain.ExceptionCustom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +14,19 @@ namespace Application.Services
 {
     public class BidService : Service, IBidService
     {
-        public BidService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        private readonly IAccountService _accountService;
+        private readonly IAuctionSessionService _auctionSessionService;
+        public BidService(IUnitOfWork unitOfWork, IMapper mapper,
+            IAccountService accountService,
+            IAuctionSessionService auctionSessionService) : base(unitOfWork, mapper)
         {
+            _accountService = accountService;
+            _auctionSessionService = auctionSessionService;
         }
 
         public async Task<ResponseDTOBid> PlaceOrderBid(PlaceOrderBidDTO dto)
         {
-            if (await CheckValidBidAmount(dto.BidAmount) == false)
-            {
-                throw new Exception("The Bid Ammount order must be greater than current price in session now");
-            }
+            await EnsureBalanceValid(dto.BidAmount,dto.BuyerId);
             var data = new Bid
             {
                 BuyerId = dto.BuyerId,
@@ -30,9 +34,12 @@ namespace Application.Services
                 BidAmount = dto.BidAmount,
                 BidDate = DateTime.Now
             };
-            await _unitOfWork.Bids.AddAsync(data);
-            await _unitOfWork.CommitAsync();
+            await _unitOfWork.Bids.AddAsync(data);           
+            await _accountService.UpdateBalance(dto.BuyerId,-dto.BidAmount);
+            await _auctionSessionService.UpdateCurrentPrice(dto.AuctionSessionId, dto.BidAmount);
+            await _auctionSessionService.UpdateWinner(dto.AuctionSessionId,dto.BuyerId);
             var bid = await _unitOfWork.Bids.GetBidById(data.Id);
+            await _unitOfWork.CommitAsync();
             return new ResponseDTOBid
             {
                 BuyerId = dto.BuyerId,
@@ -47,7 +54,18 @@ namespace Application.Services
             return check == null;
 
         }
-
+        private async Task EnsureBalanceValid(double amount, string userId)
+        {
+            if (await CheckValidBidAmount(amount) == false)
+            {
+                throw new PlaceOrderBidException("The Bid Ammount order must be greater than current price in session now");
+            }
+            if (await _accountService.CheckValidBalance(userId, amount) == false)
+            {
+                throw new PlaceOrderBidException("Your balance is not enough to place, Place add more to order!!!");
+            }
+        }
         
+
     }
 }

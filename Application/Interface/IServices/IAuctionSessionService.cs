@@ -20,5 +20,9 @@ namespace Application.Interface.IServices
         public Task JoinAuctionSession(int auctionId, string connectionId);
 
         public Task<string> GetSellerIdByAuctionId(int auctionId);
+
+        public Task UpdateCurrentPrice(int auctionId, double price);
+
+        public Task UpdateWinner(int auctionId, string winnerId);
     }
 }
