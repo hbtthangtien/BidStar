@@ -58,6 +58,11 @@ namespace Persistence.Repository
             return await _dbSet.SingleOrDefaultAsync(expression);
         }
 
+        public async Task<bool> HasAnyAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbSet.AnyAsync(expression);
+        }
+
         public void RemoveAsync(T entity)
         {
             _dbSet.Remove(entity);

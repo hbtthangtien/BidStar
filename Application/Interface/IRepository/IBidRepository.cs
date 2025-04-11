@@ -9,5 +9,6 @@ namespace Application.Interface.IRepository
 {
     public interface IBidRepository : IRepository<Bid>
     {
+        public Task<Bid> GetBidById(int id);
     }
 }

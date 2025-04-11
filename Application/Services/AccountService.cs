@@ -22,6 +22,12 @@ namespace Application.Services
             _sender = sender;
         }
 
+        public async Task<bool> CheckValidBalance(string userId, double amount)
+        {
+            bool validBalance = await _unitOfWork.Accounts.HasAnyAsync(e => e.Balance >= amount && e.Id == userId);
+            return validBalance;
+        }
+
         public async Task ConfirmEmail(string UserId, string token)
         {
             var User = await _unitOfWork.Accounts.UserManager.FindByIdAsync(UserId)
@@ -92,6 +98,13 @@ namespace Application.Services
             var link = uriBuilder.ToString();
             var Body = EmailBody.CONFIRM_EMAIL(account.Email!,link);
             await _sender.SendMailAsync(EmailSubject.CONFIRM_EMAIL, EmailBody.CONFIRM_EMAIL(account.Email!,link), account.Email!);
+        }
+
+        public async Task UpdateBalance(string userId, double amount)
+        {
+            var user = await _unitOfWork.Accounts.UserManager.FindByIdAsync(userId);
+            user.Balance += amount;
+            await _unitOfWork.CommitAsync();
         }
     }
 }

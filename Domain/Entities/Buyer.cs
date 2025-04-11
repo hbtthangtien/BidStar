@@ -8,7 +8,7 @@ namespace Domain.Entities
 {
     public class Buyer
     {
-        public required string BuyerId;
+        public required string BuyerId {  get; set; }
 
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>()!;
 

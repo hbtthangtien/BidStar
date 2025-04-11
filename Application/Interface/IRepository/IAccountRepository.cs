@@ -14,5 +14,8 @@ namespace Application.Interface.IRepository
 
         public SignInManager<Account> SignInManager { get; }
 
+
+
+
     }
 }

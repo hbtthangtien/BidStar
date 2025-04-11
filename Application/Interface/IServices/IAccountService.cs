@@ -18,5 +18,9 @@ namespace Application.Interface.IServices
         public Task SendEmailConfirmAsync(Account account);
 
         public Task<ProfileDTO> GetProfileAsync(string userId);
+
+        public Task<bool> CheckValidBalance(string userId, double amount);
+
+        public Task UpdateBalance(string userId, double amount);
     }
 }
