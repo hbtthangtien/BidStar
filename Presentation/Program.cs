@@ -1,8 +1,7 @@
 using Infrustucture.DIConfig;
 using Persistence.DatabaseConfig;
 using Presentation.BackgroundServices;
-using Microsoft.Extensions.Hosting;
-using Presentation.Hubs;
+using Infrustucture.Hubs;
 namespace Presentation
 {
     public class Program

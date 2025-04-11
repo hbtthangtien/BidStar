@@ -16,5 +16,9 @@ namespace Application.Interface.IServices
         public Task<AuctionSessionDTODetail> AuctionSessionDTODetail(int auctionId);
 
         public Task<List<AuctionSessionDTO>> GetAllAuction();
+
+        public Task JoinAuctionSession(int auctionId, string connectionId);
+
+        public Task<string> GetSellerIdByAuctionId(int auctionId);
     }
 }

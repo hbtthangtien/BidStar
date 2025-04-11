@@ -26,8 +26,7 @@ namespace Presentation.BackgroundServices
                 var auctions = db.AuctionSessions
                     .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Scheduled && a.StartTime <= now)
                     .ToList();
-                foreach (var a in auctions)
-                    a.AuctionSatus = AuctionSatus.Ongoing;
+                foreach (var a in auctions) a.AuctionSatus = AuctionSatus.Ongoing;
                 var auctions2 = db.AuctionSessions
                     .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Ongoing && a.EndTime <= now)
                     .ToList();

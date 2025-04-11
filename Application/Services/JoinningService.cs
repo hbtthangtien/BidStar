@@ -28,6 +28,7 @@ namespace Application.Services
             {
                 var joinning = new Joinning { BuyerId = buyerId, AuctionSessionId = sessionId, TimeJoin = DateTime.Now };
                 await _unitOfWork.Joinnings.AddAsync(joinning);
+                await _unitOfWork.CommitAsync();
             }
         }
     }

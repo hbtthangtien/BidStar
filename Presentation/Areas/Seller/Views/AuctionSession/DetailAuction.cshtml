@@ -1,6 +1,6 @@
 ﻿@using Domain.Enum
 @model Application.DTOs.AuctionSession.AuctionSessionDTODetail
-@{
+@* @{
     ViewData["Title"] = "Auction Session Detail";
     var product = Model.Product;
 }
@@ -46,20 +46,113 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script src="~/js/site.js"></script>
 <script>
+    const auctionId = @Model.Id;
     const connection = new signalR.HubConnectionBuilder()
         .withUrl("/auctionHub")
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
         .build();
-
-    connection.on(" ", function (price, winnerId) {
+    connection.serverTimeoutInMilliseconds = 60000;
+    connection.on("currentPrice", function (price, winnerId) {
         document.getElementById("currentPrice").innerText = parseInt(price).toLocaleString() + "₫";
         if (document.getElementById("currentWinner")) {
             document.getElementById("currentWinner").innerText = winnerId;
         }
     });
 
-    connection.on("UpdateParticipantCount", function (count) {
+    connection.on("UpdateParticipantCount", (id, count) => {
+        console.log("UpdateParticipantCount12312312312");
         document.getElementById("participantCount").innerText = count;
     });
+    connection.start().then(() => {
+        console.log("✅ SignalR connected!");
+        connection.invoke("JoinAuction", auctionId)
+            .catch(err => console.error("❌ JoinAuction error:", err));
+    }).catch(err => console.error("❌ SignalR start error:", err));
+</script> *@
 
-    connection.start().catch(err => console.error(err.toString()));
+<div class="mb-3">
+    <input type="text" id="searchParticipant" class="form-control" placeholder="🔍 Tìm người tham gia...">
+</div>
+<ul id="participantList" class="list-group mb-3"></ul>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const auctionId = @Model.Id;
+    let currentUserIsHost = false;
+    let allParticipants = [];
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/auctionHub")
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    connection.serverTimeoutInMilliseconds = 60000;
+
+    // Nhận giá mới
+    connection.on("currentPrice", function (price, winnerId) {
+        document.getElementById("currentPrice").innerText = parseInt(price).toLocaleString() + "₫";
+        if (document.getElementById("currentWinner")) {
+            document.getElementById("currentWinner").innerText = winnerId;
+        }
+    });
+
+    // Cập nhật danh sách người tham gia
+    connection.on("UpdateParticipantList", (auctionId, users) => {
+        allParticipants = users;
+        renderParticipants(users);
+    });
+
+    // Nhận thông báo khi bị đá
+    connection.on("YouHaveBeenKicked", (auctionId) => {
+        alert(`⚠️ Bạn đã bị đá khỏi phiên đấu giá ${auctionId}`);
+        window.location.href = "/AuctionSession/Index";
+    });
+
+    // Nhận vai trò seller/buyer
+    connection.on("SetRole", (isHost) => {
+        currentUserIsHost = isHost;
+    });
+
+    // Bắt đầu kết nối
+    connection.start().then(() => {
+        console.log("✅ SignalR connected");
+        connection.invoke("JoinAuction", auctionId)
+            .catch(err => console.error("❌ JoinAuction error:", err));
+    }).catch(err => console.error("❌ SignalR start error:", err));
+
+    // Tìm kiếm người dùng
+    document.getElementById("searchParticipant").addEventListener("input", function (e) {
+        const keyword = e.target.value.toLowerCase();
+        const filtered = allParticipants.filter(u => u.userName.toLowerCase().includes(keyword));
+        renderParticipants(filtered);
+    });
+
+    // Hàm hiển thị danh sách
+    function renderParticipants(users) {
+        const list = document.getElementById("participantList");
+        list.innerHTML = "";
+
+        users.forEach(u => {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+
+            const label = u.isHost ? `👑 ${u.userName} (Seller)` : u.userName;
+            li.innerHTML = `<span>${label}</span>`;
+
+            if (currentUserIsHost && !u.isHost) {
+                const btn = document.createElement("button");
+                btn.innerText = "Kick";
+                btn.className = "btn btn-sm btn-danger";
+                btn.onclick = () => {
+                    connection.invoke("KickUser", u.connectionId, auctionId)
+                        .catch(err => console.error("❌ KickUser error:", err));
+                };
+                li.appendChild(btn);
+            }
+
+            list.appendChild(li);
+        });
+    }
 </script>

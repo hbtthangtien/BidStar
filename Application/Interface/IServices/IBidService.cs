@@ -8,5 +8,6 @@ namespace Application.Interface.IServices
 {
     public interface IBidService
     {
+        public Task PlaceOrderBid();
     }
 }

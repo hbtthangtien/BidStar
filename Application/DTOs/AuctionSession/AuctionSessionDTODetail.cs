@@ -21,7 +21,7 @@ namespace Application.DTOs.AuctionSession
         public DateOnly DateStart { get; set; }
 
         public DateOnly DateEnd { get; set; }
-        public double CurrentPrice { get; set; }
+        public double CurrentPrice => Product.StartPrice;
         public string? WinnerId { get; set; }
         public double BaseBalance { get; set; }
         public virtual AuctionSatus AuctionSatus { get; set; }

@@ -1,9 +1,9 @@
 ﻿using Application.DTOs.AuctionSession;
 using Application.Interface.IServices;
+using Infrustucture.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Presentation.Hubs;
 using System.Security.Claims;
 
 namespace Presentation.Areas.Seller.Controllers

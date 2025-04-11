@@ -1,5 +1,248 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@using Domain.Enum
+@model Application.DTOs.AuctionSession.AuctionSessionDTODetail
+<link rel="stylesheet" href="~/css//Auction/BuyerDetail.css"/>
+<div class="auction-session">
+    <div class="auction-session-container">
+        <div class="auction-button-group">
+            <span class="countdown" id="countdown">Loading time...</span>
+            <div class="controls">
+                <button class="leave" onclick="showLeavePopup()">Leave session</button>
+                <button onclick="showBidPopup()">Place bids</button>
+            </div>
+        </div>
+
+        <div class="grid-two">
+            <div>
+                <h2>Details Auction Session</h2>
+                <div class="auction-section">
+                    <h3>Information if Auction Session</h3>
+                    <div style="text-align:center; margin-bottom: 20px;">
+                        <img src="@Model.Product?.ImageUrl" alt="Product Image" style="max-width:100%; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
+                    <p><strong>Seller:</strong> @Model.Seller?.Account?.UserName</p>
+                    <p><strong>Product:</strong> @Model.Product?.Name</p>
+                    <p><strong>Thời gian bắt đầu:</strong> <span id="startTime"> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</span></p>
+                    <p><strong>Thời gian kết thúc:</strong> <span id="endTime">@Model.EndTime.ToString("dd/MM/yyyy HH:mm")</span></p>
+                    <p><strong>Giá hiện tại:</strong> <span id="currentPrice">@Model.CurrentPrice</span> đ</p>
+                    <p><strong>The Winner: </strong> @(Model.Winner?.Account?.UserName ?? "")</p>
+                </div>
+
+                <div class="section" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0;">List of joinning:</h3>
+                    <button onclick="showParticipantsPopup()" style="padding: 8px 16px; border: none; border-radius: 20px; background-color: #007bff; color: white; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease;" id="btnListJoinner">View (3)</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Lịch sử đặt giá</h3>
+                <table class="auction-table">
+                    <thead>
+                        <tr>
+                            <th>Buyer</th>
+                            <th>Amount</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var bid in Model.Bids)
+                        {
+                            <tr><td>Nguyễn Văn A</td><td>2,000,000 đ</td><td>09:50</td></tr>
+                        }                        
+                    </tbody>
+                </table>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button style="margin: 5px; padding: 6px 12px; border: none; border-radius: 6px; background-color: #007bff; color: white; cursor: pointer;">Trang trước</button>
+                    <span style="margin: 0 10px; font-weight: bold;">Trang 1 / 3</span>
+                    <button style="margin: 5px; padding: 6px 12px; border: none; border-radius: 6px; background-color: #007bff; color: white; cursor: pointer;">Trang sau</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Đặt giá -->
+    <div id="bidPopup" class="auction-popup-overlay">
+        <div class="auction-popup-content">
+            <h3>Place order bid for product</h3>
+            <p>Minimun price: <strong id="minBid">2,100,000</strong> đ</p>
+            <p>Maximun price: <strong id="maxBid">5,000,000</strong> đ</p>
+            <input type="number" id="bidAmount" placeholder="Enter your price">
+            <div style="margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                <button type="button" onclick="adjustBid(100000)">+100,000</button>
+                <button type="button" onclick="adjustBid(500000)">+500,000</button>
+                <button type="button" onclick="adjustBid(1000000)">+1,000,000</button>
+                <button type="button" onclick="adjustBid(-100000)">-100,000</button>
+                <button type="button" onclick="adjustBid(-500000)">-500,000</button>
+                <button type="button" onclick="adjustBid(-1000000)">-1,000,000</button>
+                <button type="button" onclick="resetBid()">Reset</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="confirm" onclick="submitBid()">Confirm</button>
+                <button class="cancel" onclick="closePopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Rời phiên -->
+    <div class="auction-popup-overlay" id="leavePopup">
+        <div class="auction-popup-content">
+            <h3>Xác nhận rời phiên</h3>
+            <p>Are you sure to leave this auction session?</p>
+            <button class="confirm" onclick="confirmLeave()">Yes</button>
+            <button class="cancel" onclick="closePopup()">No</button>
+        </div>
+    </div>
+
+    <!-- Popup Danh sách người tham gia -->
+    <div class="auction-popup-overlay" id="participantsPopup">
+        <div class="auction-popup-content">
+            <h3>List of Joinners: </h3>
+            <div id="listOfJoinners" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                
+            </div>
+            <button class="cancel" onclick="closePopup()" style="margin-top: 20px;">Đóng</button>
+        </div>
+    </div>
+</div>
+<script>
+    function showBidPopup() {
+        document.getElementById("bidPopup").style.display = "flex";
+    }
+
+    function showParticipantsPopup() {
+        document.getElementById("participantsPopup").style.display = "flex";
+    }
+
+    function showLeavePopup() {
+        document.getElementById("leavePopup").style.display = "flex";
+    }
+
+    function confirmLeave() {
+        closePopup();
+        window.location.href = "/AuctionSession";
+    }
+
+    function closePopup() {
+        document.getElementById("bidPopup").style.display = "none";
+        document.getElementById("participantsPopup").style.display = "none";
+        const leave = document.getElementById("leavePopup");
+        const participants = document.getElementById("participantsPopup");
+        if (leave) leave.style.display = "none";
+        if (participants) participants.style.display = "none";
+    }
+
+    function adjustBid(amount) {
+        const input = document.getElementById("bidAmount");
+        let current = parseFloat(input.value) || 0;
+        current += amount;
+        if (current < 0) current = 0;
+        input.value = current;
+    }
+
+    function resetBid() {
+        document.getElementById("bidAmount").value = 0;
+    }
+
+    function submitBid() {
+        const bid = parseFloat(document.getElementById("bidAmount").value);
+        const min = parseFloat(document.getElementById("minBid").innerText);
+        const max = parseFloat(document.getElementById("maxBid").innerText);
+
+        if (isNaN(bid)) {
+            alert("Vui lòng nhập số tiền hợp lệ.");
+            return;
+        }
+
+        if (bid < min || bid > max) {
+            alert(`Giá đặt phải nằm trong khoảng từ ${min.toLocaleString()} đ đến ${max.toLocaleString()} đ.`);
+            return;
+        }
+
+        const confirmBid = confirm(`Bạn có chắc chắn muốn đặt giá ${bid.toLocaleString()} đ không?`);
+        if (!confirmBid) return;
+
+        const finalConfirm = confirm(`Xác nhận lần cuối: Đặt giá ${bid.toLocaleString()} đ?`);
+        if (!finalConfirm) return;
+
+        alert(`Bạn đã đặt giá ${bid.toLocaleString()} đ thành công!`);
+        closePopup();
+
+    }
+
+    window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closePopup();
+    });
+    const start = new Date('@Model.StartTime');
+    const end = new Date('@Model.EndTime'); // 1 giờ sau
+    console.log(end);
+    const countdownEl = document.getElementById("countdown");
+    const countDownDate = end.getTime();
+    const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = countDownDate - now;
+
+        if (distance < 0) {
+            clearInterval(countdownInterval);
+            countdownEl.innerHTML = "The Auction session is completed";
+            return;
+        }
+
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdownEl.innerHTML = `Left: ${hours}h ${minutes}m ${seconds}s`;
+    }, 1000);
+</script>
+
+
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/auctionHub")
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+    const auctionId = @ViewData["AuctionId"];
+    const list = document.getElementById("listOfJoinners");
+    const btnListJoiner = document.getElementById("btnListJoinner");
+    function createJoiner(name,username){
+        const div = document.createElement("div");
+        div.style.flex = "1 1 40%";
+        div.style.backgroundColor = "#f8f9fa";
+        div.style.padding = "15px";
+        div.style.borderRadius = "10px";
+        div.style.boxShadow = "0 2px 6px rgba(0,0,0,0.05)";
+
+        const strong = document.createElement("strong");
+        strong.textContent = name;
+
+        const br = document.createElement("br");
+
+        const span = document.createElement("span");
+        span.style.color = "gray";
+        span.textContent = username;
+
+        div.appendChild(strong);
+        div.appendChild(br);
+        div.appendChild(span);
+        list.appendChild(div);
+
+    }
+  
+    // join auction 
+    connection.start().then(() => {
+        connection.invoke("JoinAuction", auctionId)
+            .catch(err => console.error(err));
+    }).catch(err => console.error(err));
+    // catch join 
+    connection.on("UpdateParticipantList",(id,joiners)=>{
+        list.innerHTML = "";
+        joiners.forEach(e => {
+            createJoiner(e.userName, e.userName)
+        });
+        btnListJoiner.innerHTML = `View (${list.childElementCount})`;
+        console.log(`View (${list.childElementCount})`);
+    })
+    connection.on("SetRole",(isHosted)=>{
+        console.log(isHosted);
+    })
+</script>

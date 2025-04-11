@@ -3,18 +3,13 @@ using Application.Interface.IServices;
 using Application.UnitOfWork;
 using AutoMapper;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
     public class AuctionSessionService : Service, IAuctionSessionService
     {
-
-        public AuctionSessionService(IUnitOfWork unitOfWork, IMapper mapper) : base(unitOfWork, mapper)
+        public AuctionSessionService(IUnitOfWork unitOfWork,
+            IMapper mapper) : base(unitOfWork, mapper)
         {
         }
 
@@ -28,7 +23,11 @@ namespace Application.Services
         public async Task CreateAuctionSessionBySeller(AuctionSessionDTO dto)
         {
             var data = _mapper.Map<AuctionSession>(dto);
-            if( dto.StartTime <= DateTime.Now && dto.EndTime >= DateTime.Now )
+            if (dto.StartTime >= DateTime.Now)
+            {
+                data.AuctionSatus = Domain.Enum.AuctionSatus.Scheduled;
+            }
+            else if( dto.StartTime <= DateTime.Now && dto.EndTime >= DateTime.Now )
             {
                 data.AuctionSatus = Domain.Enum.AuctionSatus.Ongoing;
             }
@@ -51,6 +50,18 @@ namespace Application.Services
             var data = await _unitOfWork.AuctionSessions.FindAsync(e => e.SellerId == sellerId);
             var auctions = _mapper.Map<List<AuctionSessionDTO>>(data);
             return auctions;
+        }
+
+        public async Task JoinAuctionSession(int auctionId, string connectionId)
+        {
+          
+           
+        }
+
+        public async Task<string> GetSellerIdByAuctionId(int auctionId)
+        {
+            var data =  await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId);
+            return data.SellerId;
         }
     }
 }
