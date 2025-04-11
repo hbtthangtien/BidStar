@@ -23,8 +23,8 @@
                     <p><strong>Product:</strong> @Model.Product?.Name</p>
                     <p><strong>Thời gian bắt đầu:</strong> <span id="startTime"> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</span></p>
                     <p><strong>Thời gian kết thúc:</strong> <span id="endTime">@Model.EndTime.ToString("dd/MM/yyyy HH:mm")</span></p>
-                    <p><strong>Giá hiện tại:</strong> <span id="currentPrice">@Model.CurrentPrice</span> đ</p>
-                    <p><strong>The Winner: </strong> @(Model.Winner?.Account?.UserName ?? "")</p>
+                    <p><strong>Giá hiện tại:</strong> <span id="currentPrice">@Model.DisplayPrice</span> đ</p>
+                    <p><strong>The Winner: </strong><span id="winner"> @(Model.Winner?.Account?.UserName ?? "")</span></p>
                 </div>
 
                 <div class="section" style="display: flex; justify-content: space-between; align-items: center;">
@@ -34,7 +34,7 @@
             </div>
 
             <div class="section">
-                <h3>Lịch sử đặt giá</h3>
+                <h3>History of Bid Orders</h3>
                 <table class="auction-table">
                     <thead>
                         <tr>
@@ -43,10 +43,10 @@
                             <th>Time</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach(var bid in Model.Bids)
+                    <tbody id="bidsHistory">
+                        @foreach(var bid in Model.Bids.OrderByDescending(e => e.BidAmount))
                         {
-                            <tr><td>Nguyễn Văn A</td><td>2,000,000 đ</td><td>09:50</td></tr>
+                            <tr><td>@bid.Buyer?.Account?.UserName</td><td>@bid.BidAmount đ</td><td>@bid.BidDate.ToString("HH:mm dd/MM/yyyy")</td></tr>
                         }                        
                     </tbody>
                 </table>
@@ -204,6 +204,7 @@
     const auctionId = @ViewData["AuctionId"];
     const list = document.getElementById("listOfJoinners");
     const btnListJoiner = document.getElementById("btnListJoinner");
+    const historyOrders = document.getElementById("bidsHistory");
     function createJoiner(name,username){
         const div = document.createElement("div");
         div.style.flex = "1 1 40%";
@@ -246,6 +247,28 @@
         console.log(isHosted);
     })
     connection.on("NewBids",(data)=>{
-        console.log(data);
+        const newRow = document.createElement("tr");
+        const input = data.bidDate;
+        const formatted = new Intl.DateTimeFormat('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour12: false,
+        }).format(new Date(input)).replace(',', '');
+        const currentPrice = document.getElementById("currentPrice");
+        const winner = document.getElementById("winner");
+        currentPrice.innerHTML = data.bidAmount;
+        winner.innerHTML = data.buyerName;
+
+        newRow.innerHTML = `
+            <td>${data.buyerName}</td>
+            <td>${data.bidAmount} đ</td>
+            <td>${formatted}</td>
+    `;
+        historyOrders.insertBefore(newRow, historyOrders.firstChild);
+
     })
+
 </script>

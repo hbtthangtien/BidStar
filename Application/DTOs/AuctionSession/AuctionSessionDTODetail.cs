@@ -21,9 +21,11 @@ namespace Application.DTOs.AuctionSession
         public DateOnly DateStart { get; set; }
 
         public DateOnly DateEnd { get; set; }
-        public double CurrentPrice => Product.StartPrice;
+        public double CurrentPrice { get; set; }
         public string? WinnerId { get; set; }
         public double BaseBalance { get; set; }
+
+        public double DisplayPrice => (BaseBalance != 0 && Product != null) ? CurrentPrice : Product!.StartPrice;
         public virtual AuctionSatus AuctionSatus { get; set; }
         public virtual Buyer? Winner { get; set; }
         public virtual Domain.Entities.Product? Product { get; set; }
