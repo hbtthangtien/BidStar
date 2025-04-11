@@ -4,6 +4,7 @@ using Domain.ExceptionCustom;
 using Infrustucture.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace Presentation.Controllers
 {
@@ -25,6 +26,8 @@ namespace Presentation.Controllers
         [HttpPost("bid/placeBid")]
         public async Task<IActionResult> PlaceBid([FromBody]PlaceOrderBidDTO dto)
         {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            dto.BuyerId = userId;
             try
             {
                 var data = await _bidService.PlaceOrderBid(dto);

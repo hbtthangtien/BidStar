@@ -10,7 +10,7 @@ namespace Application.DTOs.Bids
     {
         public int AuctionSessionId {  get; set; }
 
-        public required string BuyerId { get; set; }
+        public string BuyerId { get; set; }
 
         public double BidAmount { get; set; }
 

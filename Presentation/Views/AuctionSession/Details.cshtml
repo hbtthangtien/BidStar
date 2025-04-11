@@ -63,8 +63,7 @@
     <div id="bidPopup" class="auction-popup-overlay">
         <div class="auction-popup-content">
             <h3>Place order bid for product</h3>
-            <p>Minimun price: <strong id="minBid">2,100,000</strong> đ</p>
-            <p>Maximun price: <strong id="maxBid">5,000,000</strong> đ</p>
+            <p>Minimun price: <strong id="minBid">@Model.DisplayPrice</strong> đ</p>
             <input type="number" id="bidAmount" placeholder="Enter your price">
             <div style="margin: 10px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
                 <button type="button" onclick="adjustBid(100000)">+100,000</button>
@@ -144,30 +143,52 @@
 
     function submitBid() {
         const bid = parseFloat(document.getElementById("bidAmount").value);
-        const min = parseFloat(document.getElementById("minBid").innerText);
-        const max = parseFloat(document.getElementById("maxBid").innerText);
-
+        const min = parseFloat(document.getElementById("minBid").innerText) + 100000;
+        console.log(bid);
         if (isNaN(bid)) {
-            alert("Vui lòng nhập số tiền hợp lệ.");
+            alert("Please enter the valid input!!");
             return;
         }
 
-        if (bid < min || bid > max) {
-            alert(`Giá đặt phải nằm trong khoảng từ ${min.toLocaleString()} đ đến ${max.toLocaleString()} đ.`);
+        if (bid < min) {
+            alert(`The balance must be greater than ${min.toLocaleString()}đ.`);
             return;
         }
 
-        const confirmBid = confirm(`Bạn có chắc chắn muốn đặt giá ${bid.toLocaleString()} đ không?`);
+        const confirmBid = confirm(`Are you sure to place bid with price is ${bid.toLocaleString()} đ?`);
         if (!confirmBid) return;
 
         const finalConfirm = confirm(`Xác nhận lần cuối: Đặt giá ${bid.toLocaleString()} đ?`);
         if (!finalConfirm) return;
 
         alert(`Bạn đã đặt giá ${bid.toLocaleString()} đ thành công!`);
+        placeOrderBid(bid);
         closePopup();
 
     }
+    function placeOrderBid(amount){
+        const auctionId = @ViewData["AuctionId"];
+        $.ajax({
+            url: '/bid/placeBid',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                'AuctionSessionId': auctionId,
+                'BidAmount': amount
+            }),
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function (res) {
+                const min = res.bidAmount;
+                document.getElementById("minBid").innerText = min;
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
 
+    }
     window.addEventListener("keydown", function (e) {
         if (e.key === "Escape") closePopup();
     });
@@ -268,7 +289,6 @@
             <td>${formatted}</td>
     `;
         historyOrders.insertBefore(newRow, historyOrders.firstChild);
-
     })
 
 </script>
