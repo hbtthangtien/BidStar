@@ -7,7 +7,10 @@
             <span class="countdown" id="countdown">Loading time...</span>
             <div class="controls">
                 <button class="leave" onclick="showLeavePopup()">Leave session</button>
-                <button onclick="showBidPopup()">Place bids</button>
+                @if(Model.AuctionSatus == AuctionSatus.Ongoing)
+                {
+                    <button id="btnPlaceBid" onclick="showBidPopup()">Place bids</button>
+                }
             </div>
         </div>
 
@@ -185,6 +188,7 @@
             },
             error: function (xhr, status, error) {
                 console.log(error);
+                console.log(xhr);
             }
         });
 
@@ -290,5 +294,8 @@
     `;
         historyOrders.insertBefore(newRow, historyOrders.firstChild);
     })
-
+    connection.on("AuctionEnd", (sessionId) => {
+        const btnPlaceBid = document.getElementById("btnPlaceBid");
+        btnPlaceBid.style.display = "none";
+    });
 </script>

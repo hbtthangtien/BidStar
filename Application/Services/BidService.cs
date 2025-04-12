@@ -26,7 +26,7 @@ namespace Application.Services
 
         public async Task<ResponseDTOBid> PlaceOrderBid(PlaceOrderBidDTO dto)
         {
-            await EnsureBalanceValid(dto.BidAmount,dto.BuyerId);
+            await EnsureBalanceValid(dto.BidAmount,dto.BuyerId,dto.AuctionSessionId);
             var data = new Bid
             {
                 BuyerId = dto.BuyerId,
@@ -48,15 +48,15 @@ namespace Application.Services
                 BuyerName = bid.Buyer?.Account?.UserName!
             };
         }
-        private async Task<bool> CheckValidBidAmount(double amount)
+        private async Task<bool> CheckValidBidAmount(double amount, int auctionId)
         {
-            var check  = await _unitOfWork.Bids.GetSingle(e => e.BidAmount >= amount);
+            var check  = await _unitOfWork.Bids.GetSingle(e => e.BidAmount >= amount && e.Id == auctionId);
             return check == null;
 
         }
-        private async Task EnsureBalanceValid(double amount, string userId)
+        private async Task EnsureBalanceValid(double amount, string userId,int auctionId)
         {
-            if (await CheckValidBidAmount(amount) == false)
+            if (await CheckValidBidAmount(amount,auctionId) == false)
             {
                 throw new PlaceOrderBidException("The Bid Ammount order must be greater than current price in session now");
             }

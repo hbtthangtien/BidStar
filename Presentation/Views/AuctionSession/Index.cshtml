@@ -29,6 +29,9 @@
                             @if (session.AuctionSatus == AuctionSatus.Ongoing)
                             {
                                 <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 Join Session</a>
+                            }else
+                            {
+                                <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 View Session</a>
                             }
                         </div>
                     </div>

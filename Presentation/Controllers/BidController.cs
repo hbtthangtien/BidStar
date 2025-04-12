@@ -46,7 +46,7 @@ namespace Presentation.Controllers
                 return BadRequest(new
                 {
                     Message = ex.Message,
-                    Status = 400
+                    Status = 530
                 });
             }
             
