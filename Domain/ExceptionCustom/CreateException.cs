@@ -25,8 +25,5 @@ namespace Domain.ExceptionCustom
         {
         }
 
-        protected CreateException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

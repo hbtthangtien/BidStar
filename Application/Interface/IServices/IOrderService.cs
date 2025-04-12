@@ -8,5 +8,8 @@ namespace Application.Interface.IServices
 {
     public interface IOrderService
     {
+        public Task CompletedOrder(int auctionId, string buyerId);
+
+        public Task CreateOrder(int auctionId);
     }
 }

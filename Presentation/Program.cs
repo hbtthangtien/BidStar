@@ -20,6 +20,7 @@ namespace Presentation
             builder.Services.InitialValueConfig(builder.Configuration);
             builder.Services.AddHostedService<AuctionSessionStatusBackground>();
             builder.Services.AddSignalR();
+            builder.Services.AddSingleton<AuctionSessionScheduler>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

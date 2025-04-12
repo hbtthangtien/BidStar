@@ -34,7 +34,7 @@
                             <label asp-for="CategoryId" class="form-label">Category</label>
                             <select asp-for="CategoryId" class="form-select">
                                 <option value="1">-- Select Category --</option>
-                                @foreach(var i in categories)
+                                @foreach(var i in categories!)
                                 {
                                     <option value="@i.Id">-@i.Name</option>
                                 }

@@ -24,5 +24,7 @@ namespace Application.Interface.IServices
         public Task UpdateCurrentPrice(int auctionId, double price);
 
         public Task UpdateWinner(int auctionId, string winnerId);
+
+        public Task<bool> SolveAuctionCompleted(int sessionId);
     }
 }

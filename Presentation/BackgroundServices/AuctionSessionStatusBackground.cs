@@ -22,6 +22,7 @@ namespace Presentation.BackgroundServices
             {
                 using var scope = _serviceProvider.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<BidStarContext>();
+                var scheduler = scope.ServiceProvider.GetRequiredService<AuctionSessionScheduler>();
                 var now = DateTime.Now;
                 var auctions = db.AuctionSessions
                     .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Scheduled && a.StartTime <= now)
@@ -31,9 +32,12 @@ namespace Presentation.BackgroundServices
                     .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Ongoing && a.EndTime <= now)
                     .ToList();
                 foreach (var a in auctions2)
-                    a.AuctionSatus = AuctionSatus.Completed;
+                {
+                    scheduler.ForceEndAuctionTime(a.Id);
+                }
+                    
                 await db.SaveChangesAsync();
-                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
     }

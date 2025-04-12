@@ -10,6 +10,7 @@ namespace Domain.Enum
     {
         Scheduled,
         Ongoing,
-        Completed
+        Completed,
+        Paid
     }
 }
