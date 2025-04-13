@@ -28,7 +28,7 @@
                             <span class="badge bg-@GetStatusColor(session.AuctionSatus) mb-3" id="status-@session.Id">@session.AuctionSatus</span>
                             @if (session.AuctionSatus == AuctionSatus.Ongoing)
                             {
-                                <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 Join Session</a>
+                                <a id="linkDetail" asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 Join Session</a>
                             }else
                             {
                                 <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 View Session</a>
@@ -65,6 +65,13 @@
         hub.on("addSession", function () {
             location.reload();
         });
+        hub.on("AuctionEnd", (auctionId) => {
+            const spanStatus = document.getElementById("status-"+auctionId);
+            const spanStatus = document.getElementById("linkDetail");
+            spanStatus.className = "badge bg-dark mb-3";
+            spanStatus.innerHTML = "🔍 View Session"
+        });
+
         function getStatusColor(status) {
             switch (status) {
                 case "Opening": return "success";
