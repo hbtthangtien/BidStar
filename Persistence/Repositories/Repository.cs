@@ -1,4 +1,5 @@
 ﻿using Application.Interface.IRepository;
+using Domain.Paginated;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Persistence.DatabaseConfig;
@@ -51,6 +52,13 @@ namespace Persistence.Repository
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
+        }
+
+        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> expression, Expression<Func<T, object>> orderBy, bool ascending)
+        {
+            var data = _dbSet.Where(expression).AsNoTracking();
+            data = ascending ? data.OrderBy(orderBy) : data.OrderByDescending(orderBy);
+            return data;
         }
 
         public async Task<T?> GetSingle(Expression<Func<T, bool>> expression)

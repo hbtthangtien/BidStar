@@ -1,4 +1,6 @@
 ﻿using Application.DTOs.AuctionSession;
+using Domain.Entities;
+using Domain.Paginated;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,5 +28,10 @@ namespace Application.Interface.IServices
         public Task UpdateWinner(int auctionId, string winnerId);
 
         public Task<bool> SolveAuctionCompleted(int sessionId);
+
+        public Task<PaginatedList<AuctionSession>> GetAllAuction(string searchString = "",
+            string sortOrder = "",
+            int pageNumber =1,
+            int pageSize= 5);
     }
 }

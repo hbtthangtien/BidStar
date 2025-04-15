@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Paginated;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -20,5 +21,7 @@ namespace Application.Interface.IRepository
         public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression);
 
         public Task<bool> HasAnyAsync(Expression<Func<T, bool>> expression);
+
+        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> expression, Expression<Func<T,object>> orderBy,bool ascending);
     }
 }

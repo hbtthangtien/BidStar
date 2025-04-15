@@ -3,7 +3,9 @@ using Application.Interface.IServices;
 using Application.UnitOfWork;
 using AutoMapper;
 using Domain.Entities;
+using Domain.Paginated;
 using Presentation.BackgroundServices;
+using System.Linq.Expressions;
 
 namespace Application.Services
 {
@@ -116,5 +118,15 @@ namespace Application.Services
             await _unitOfWork.CommitAsync();
             return true;
         }
+
+        public async Task<PaginatedList<AuctionSession>> GetAllAuction(string searchString="", string sortOrder = "", int pageNumber = 1, int pageSize = 5)
+        {
+            Expression<Func<AuctionSession, bool>> filter =( e => (e.Product!.Name!.Contains(searchString)));
+            Expression<Func<AuctionSession, object>> sortBy = e => e.BaseBalance;
+            var query = _unitOfWork.AuctionSessions.GetPaginatedList(filter, sortBy, true);
+            return await PaginatedList<AuctionSession>.CreateAsync(query,pageNumber,pageSize);
+        }
+        
+
     }
 }
