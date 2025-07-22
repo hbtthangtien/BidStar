@@ -9,7 +9,6 @@ namespace Domain.Entities
 {
     public class Account  : IdentityUser
     {
-
         public string? Fullname { get; set; }
         public string? Address { get; set; }
         public double? Balance { get; set; }

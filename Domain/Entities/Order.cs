@@ -31,10 +31,5 @@ namespace Domain.Entities
         public virtual Seller? Seller { get; set; }
 
         public virtual AuctionSession? AuctionSession { get; set; }
-
-
-
-
-
     }
 }

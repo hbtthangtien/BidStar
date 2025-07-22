@@ -32,6 +32,7 @@ namespace Presentation.Controllers
             {
                 var data = await _bidService.PlaceOrderBid(dto);
                 await _hubContext.Clients.Group($"auction_{dto.AuctionSessionId}").SendAsync("NewBids",data);
+                await _hubContext.Clients.All.SendAsync("NewBidss", dto.AuctionSessionId, data.BidAmount);
                 return Ok(data);
             }
             catch(PlaceOrderBidException ex)

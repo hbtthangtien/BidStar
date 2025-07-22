@@ -1,32 +1,124 @@
-﻿@using Domain.Constant
-@{
-    ViewData["Title"] = "Home";
-    var userName = User.Identity?.Name ?? "Guest";
-    var userRole = User.IsInRole(UserRole.SELLER) ? UserRole.SELLER : User.IsInRole(UserRole.BUYER) ? UserRole.BUYER : "Unknown";
-    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
-}
+﻿@using Domain.Enum
+@model BuyerViewModel
 
-<div class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);">
-    <div class="text-center text-white px-4 py-5" style="max-width: 700px;">
-        <h1 class="display-4 fw-bold mb-3">🎉 Welcome to AuctionSite!</h1>
-
-        @if (isAuthenticated)
+<div class="container py-4">
+    <h2 class="mb-4" style="background: linear-gradient(90deg, #43C6DB, #AB7AE7); color:white; border-radius: 12px; padding: 12px 24px; width:fit-content;">Đấu giá nổi bật</h2>
+    <div class="row g-4">
+        @foreach (var auction in Model.Auctions)
         {
-            <p class="lead mb-2">👤 <strong>@userName</strong></p>
-            <p class="mb-4">✅ Role: <strong>@userRole</strong></p>
+            <div class="col-md-4">
+                <div class="card shadow-sm h-100" style="border-radius: 16px;">
+                    <img src="@auction.ProductImage" class="card-img-top" alt="@auction.ProductName" style="border-radius: 16px 16px 0 0; height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@auction.ProductName</h5>
+                        <div class="d-flex align-items-center mb-2">
+                            @* Trạng thái *@
+                            <span class="badge
+                                @(auction.AuctionStatus ==  Domain.Enum.AuctionSatus.Paid ? "bg-success" :
+                                  auction.AuctionStatus ==  Domain.Enum.AuctionSatus.Scheduled ? "bg-primary" :
+                                  auction.AuctionStatus == AuctionSatus.Completed ? "bg-secondary" :
+                                  "bg-warning text-dark")"
+                                  style="font-size: 1rem; margin-right:8px;">
+                                @auction.AuctionStatus
+                            </span>
+                            @if (auction.AuctionStatus == Domain.Enum.AuctionSatus.Scheduled)
+                            {
+                                <span class="badge bg-danger">Còn lại: <span class="countdown" data-end="@auction.EndTime.ToString("yyyy-MM-ddTHH:mm:ss")"></span></span>
+                            }
+                        </div>
+                        <p class="mb-1"><b style="color: #43C6DB;">@auction.CurrentPrice.ToString("N0") đ</b> <span class="badge bg-warning text-dark ms-2">@auction.BidCount lượt đấu</span></p>
+                        <p class="mb-1">🗓 <b>Bắt đầu:</b> @auction.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
+                        <p class="mb-3">🗓 <b>Kết thúc:</b> @auction.EndTime.ToString("dd/MM/yyyy HH:mm")</p>
+                        @if (auction.IsOngoing)
+                        {
+                            <button class="btn btn-gradient w-100 mt-2 btn-enter-auction"
+                                    style="background: linear-gradient(90deg,#FFD580,#43C6DB); color:#121117;" data-auctionid="@auction.AuctionId">
+                                Đấu giá ngay
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary w-100 mt-2" disabled>Đã kết thúc</button>
+                        }
 
-            <div class="d-flex justify-content-center gap-3 mb-3">
-                <a asp-controller="Auction" asp-action="MyAuctions" class="btn btn-outline-light fw-bold">📦 My Auctions</a>
-                <a asp-controller="Auction" asp-action="MyBids" class="btn btn-outline-light fw-bold">🎯 My Bids</a>
-            </div>
-        }
-        else
-        {
-            <p class="lead mb-4">Buy and sell unique items in live auction sessions. Get started by registering or browsing upcoming auctions.</p>
-            <div class="d-flex justify-content-center gap-3">
-                <a asp-controller="Auction" asp-action="Session" class="btn btn-warning btn-lg fw-bold px-4">View Auctions</a>
-                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg fw-bold px-4">Join Now</a>
+                    </div>
+                </div>
             </div>
         }
     </div>
 </div>
+<!-- Modal thông báo -->
+<div class="modal fade" id="joinErrorModal" tabindex="-1" aria-labelledby="joinErrorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="joinErrorLabel">Không đủ số dư</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="joinErrorMsg"></div>
+            <div class="modal-footer">
+                <a href="/Account/Profile" class="btn btn-warning">Nạp tiền ngay</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+<script>
+    // Kết nối tới hub
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/auctionHub")
+        .build();
+
+        connection.on("NewBidss", function (auctionId, amount) {
+            location.reload();
+        });
+        connection.start()
+            .then(() => console.log("SignalR connected"))
+            .catch(err => console.error("SignalR error:", err));
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.countdown').forEach(function (elem) {
+            const endTime = new Date(elem.getAttribute('data-end'));
+            function updateCountdown() {
+                const now = new Date();
+                const diff = endTime - now;
+                if (diff <= 0) {
+                    elem.textContent = 'Đã kết thúc';
+                    elem.classList.remove('bg-danger');
+                    elem.classList.add('bg-secondary');
+                    return;
+                }
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+                elem.textContent = `${hours}h ${mins}m ${secs}s`;
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        });
+    });
+
+</script>
+<script>
+    document.querySelectorAll('.btn-enter-auction').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var auctionId = this.getAttribute('data-auctionid');
+            fetch(`/AuctionSession/CheckBalance?auctionId=${auctionId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.isEnough) {
+                        // Đủ tiền → chuyển vào trang chi tiết auction
+                        window.location.href = `/AuctionSession/Details/${auctionId}`;
+                    } else {
+                        // Không đủ tiền → hiện modal
+                        document.getElementById('joinErrorMsg').textContent = data.message;
+                        var modal = new bootstrap.Modal(document.getElementById('joinErrorModal'));
+                        modal.show();
+                    }
+                });
+        });
+    });
+</script>
+}

@@ -55,6 +55,7 @@ namespace Application.Services
         public async Task<List<AuctionSessionDTO>> GetAllAuction()
         {
             var data = await _unitOfWork.AuctionSessions.GetAllAsync();
+            data = data.Where(e => e.AuctionSatus == Domain.Enum.AuctionSatus.Ongoing);
             var auctions = _mapper.Map<List<AuctionSessionDTO>>(data);
             return auctions;
         }
@@ -126,7 +127,16 @@ namespace Application.Services
             var query = _unitOfWork.AuctionSessions.GetPaginatedList(filter, sortBy, true);
             return await PaginatedList<AuctionSession>.CreateAsync(query,pageNumber,pageSize);
         }
-        
 
+        public async Task<IEnumerable<AuctionSession>> GetActiveAuctionsAsync()
+        {
+            return await _unitOfWork.AuctionSessions.GetAllAsync();
+        }
+
+        public async Task<AuctionSession> GetAuctionById(int auctionId)
+        {
+            return await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId) ??
+                throw new Exception("Not found");
+        }
     }
 }

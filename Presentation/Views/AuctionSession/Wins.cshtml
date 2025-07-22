@@ -1,0 +1,74 @@
+﻿@model List<WinCardVM>
+@{
+    ViewData["Title"] = "Sản phẩm đã thắng";
+}
+<style>
+    .btn-gradient {
+        background: linear-gradient(90deg,#FFD580,#43C6DB) !important;
+        color: #121117 !important;
+        border: none;
+        border-radius: 16px;
+        font-weight: 600
+    }
+
+        .btn-gradient:hover {
+            opacity: .9
+        }
+
+</style>
+<div class="container py-4">
+    <h2 class="mb-4 text-white px-4 py-2"
+        style="background:linear-gradient(90deg,#43C6DB,#AB7AE7);border-radius:12px">
+        Sản phẩm đã thắng
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Bạn chưa thắng phiên đấu giá nào.</div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var p in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100" style="border-radius:16px">
+                        <img src="@p.ProductImage" class="card-img-top"
+                             style="height:200px;object-fit:cover;border-radius:16px 16px 0 0" />
+
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@p.ProductName</h5>
+
+                            <p class="mb-2">Người bán: <b>@p.SellerName</b></p>
+
+                            <p class="mb-2">
+                                Giá thắng:
+                                <span style="color:#43C6DB;font-weight:600">
+                                    @p.FinalPrice.ToString("N0") đ
+                                </span>
+                            </p>
+
+                            <span class="badge mb-3 @(p.Paid ? "bg-success" : "bg-warning text-dark")">
+                                @(p.Paid ? "Đã thanh toán" : "Chưa thanh toán")
+                            </span>
+
+                            <div class="mt-auto">
+                                <a href="/Order/Details/@p.OrderId" class="btn btn-outline-primary w-100 mb-2">
+                                    Xem chi tiết
+                                </a>
+                                @if (!p.Paid)
+                                {
+                                    <a href="/Payment/Pay/@p.OrderId"
+                                       class="btn btn-gradient w-100"
+                                       style="background:linear-gradient(90deg,#FFD580,#43C6DB);color:#121117">
+                                        Thanh toán ngay
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

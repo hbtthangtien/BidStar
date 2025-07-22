@@ -28,10 +28,14 @@
                             <span class="badge bg-@GetStatusColor(session.AuctionSatus) mb-3" id="status-@session.Id">@session.AuctionSatus</span>
                             @if (session.AuctionSatus == AuctionSatus.Ongoing)
                             {
-                                <a id="linkDetail" asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 Join Session</a>
-                            }else
+                                <button class="btn btn-gradient w-100 mt-2 btn-enter-auction"
+                                        style="background: linear-gradient(90deg,#FFD580,#43C6DB); color:#121117;" data-auctionid="@session.Id">
+                                    Đấu giá ngay
+                                </button>
+                            }
+                            else
                             {
-                                <a asp-controller="AuctionSession" asp-action="Details" asp-route-id="@session.Id" class="btn btn-outline-primary mt-auto">🔍 View Session</a>
+                                <button class="btn btn-secondary w-100 mt-2" disabled>Đã kết thúc</button>
                             }
                         </div>
                     </div>
@@ -44,7 +48,21 @@
         }
     }
 </div>
-
+<div class="modal fade" id="joinErrorModal" tabindex="-1" aria-labelledby="joinErrorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="joinErrorLabel">Không đủ số dư</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body" id="joinErrorMsg"></div>
+            <div class="modal-footer">
+                <a href="/Account/Profile" class="btn btn-warning">Nạp tiền ngay</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     <script>
@@ -83,6 +101,26 @@
         }
 
         hub.start().catch(err => console.error(err.toString()));
+    </script>
+    <script>
+        document.querySelectorAll('.btn-enter-auction').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var auctionId = this.getAttribute('data-auctionid');
+                fetch(`/AuctionSession/CheckBalance?auctionId=${auctionId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.isEnough) {
+                            // Đủ tiền → chuyển vào trang chi tiết auction
+                            window.location.href = `/AuctionSession/Details/${auctionId}`;
+                        } else {
+                            // Không đủ tiền → hiện modal
+                            document.getElementById('joinErrorMsg').textContent = data.message;
+                            var modal = new bootstrap.Modal(document.getElementById('joinErrorModal'));
+                            modal.show();
+                        }
+                    });
+            });
+        });
     </script>
 }
 

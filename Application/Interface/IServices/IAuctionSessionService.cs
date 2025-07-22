@@ -33,5 +33,9 @@ namespace Application.Interface.IServices
             string sortOrder = "",
             int pageNumber =1,
             int pageSize= 5);
+        Task<IEnumerable<AuctionSession>> GetActiveAuctionsAsync();
+        Task<AuctionSession> GetAuctionById(int auctionId);
+
+        
     }
 }

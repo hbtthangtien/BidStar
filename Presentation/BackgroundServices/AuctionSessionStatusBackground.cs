@@ -35,7 +35,7 @@ namespace Presentation.BackgroundServices
                 {
                     scheduler.ForceEndAuctionTime(a.Id);
                 }
-                    
+
                 await db.SaveChangesAsync();
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }

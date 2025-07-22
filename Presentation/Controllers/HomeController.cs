@@ -1,3 +1,4 @@
+using Application.Interface.IServices;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models;
 using System.Diagnostics;
@@ -7,15 +8,32 @@ namespace Presentation.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IAuctionSessionService _auctionService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IAuctionSessionService auctionSessionService)
         {
             _logger = logger;
+            _auctionService = auctionSessionService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return View();
+            var auctions = await _auctionService.GetActiveAuctionsAsync();
+            var model = new BuyerViewModel
+            {
+                Auctions = auctions.Select(a => new AuctionProductViewModel
+                {
+                    AuctionId = a.Id,
+                    ProductName = a.Product?.Name ?? "(Chưa đặt tên)",
+                    ProductImage = a.Product?.ImageUrl ?? "/images/no-image.png",
+                    CurrentPrice = a.CurrentPrice,
+                    BidCount = a.Bids?.Count ?? 0,
+                    EndTime = a.EndTime,
+                    StartTime = a.StartTime,
+                    AuctionStatus = a.AuctionSatus
+                }).ToList()
+            };
+            return View(model);
         }
 
         public IActionResult Privacy()

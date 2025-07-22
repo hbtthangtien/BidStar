@@ -54,9 +54,9 @@ namespace Persistence.Repository
             return await _dbSet.ToListAsync();
         }
 
-        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> expression, Expression<Func<T, object>> orderBy, bool ascending)
+        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> condition, Expression<Func<T, object>> orderBy, bool ascending)
         {
-            var data = _dbSet.Where(expression).AsNoTracking();
+            var data = _dbSet.Where(condition).AsNoTracking();
             data = ascending ? data.OrderBy(orderBy) : data.OrderByDescending(orderBy);
             return data;
         }

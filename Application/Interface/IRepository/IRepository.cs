@@ -19,9 +19,7 @@ namespace Application.Interface.IRepository
         public Task CommitTransactionAsync();
         public Task RollbackTransactionAsync();
         public Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression);
-
         public Task<bool> HasAnyAsync(Expression<Func<T, bool>> expression);
-
-        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> expression, Expression<Func<T,object>> orderBy,bool ascending);
+        public IQueryable<T> GetPaginatedList(Expression<Func<T, bool>> condition, Expression<Func<T,object>> orderBy,bool ascending);
     }
 }

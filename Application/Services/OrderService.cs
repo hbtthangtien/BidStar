@@ -37,5 +37,12 @@ namespace Application.Services
             await _unitOfWork.Orders.AddAsync(order);
             await _unitOfWork.CommitAsync();
         }
+
+        public async Task<List<Order>> GetWinOrder(string userId)
+        {
+            var orders = await _unitOfWork.Orders.GetAllAsync();
+            orders = orders.Where(e => e.BuyerId == userId).ToList();
+            return (List<Order>)orders;
+        }
     }
 }

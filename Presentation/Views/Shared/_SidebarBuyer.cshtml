@@ -1,0 +1,15 @@
+﻿
+@if (User.Identity.IsAuthenticated){
+    <aside class="sidebar-buyer">
+        <nav>
+            <ul>
+                <li><a href="/Home">🏠 Trang chủ</a></li>
+                <li><a href="/AuctionSession">🔥 Đấu giá đang diễn ra</a></li>
+                @* <li><a>🕒 Lịch sử tham gia</a></li>
+                <li><a>🛒 Đơn hàng của tôi</a></li> *@              
+                <li><a href="/AuctionSession/Wins">🏆 Sản phẩm đã thắng</a></li>
+                <li><a href="/Account/Profile">💳 Nạp tiền</a></li>
+            </ul>
+        </nav>
+    </aside>
+}
