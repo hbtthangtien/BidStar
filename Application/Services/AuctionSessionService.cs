@@ -138,5 +138,12 @@ namespace Application.Services
             return await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId) ??
                 throw new Exception("Not found");
         }
+
+        public async Task<dynamic> CountAuctionsBySellerAsync(string? sellerId)
+        {
+            var auctions = await _unitOfWork.AuctionSessions.GetAllAsync();
+            var count = auctions.Where(e => e.SellerId == sellerId).Count();
+            return count;
+        }
     }
 }

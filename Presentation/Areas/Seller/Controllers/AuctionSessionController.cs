@@ -40,8 +40,9 @@ namespace Presentation.Areas.Seller.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateAuction(int productId)
         {
-            var product = await _productService.GetProductDetailById(productId);
-            ViewBag.Product = product;
+            var sellerId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var list = await _productService.GetProductsPendingBySellerIdAsync(sellerId!);
+            ViewBag.Products = list;
             return View(new AuctionSessionDTO());
         }
         [HttpPost]

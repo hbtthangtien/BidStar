@@ -35,7 +35,6 @@ namespace Application.Interface.IServices
             int pageSize= 5);
         Task<IEnumerable<AuctionSession>> GetActiveAuctionsAsync();
         Task<AuctionSession> GetAuctionById(int auctionId);
-
-        
+        Task<dynamic> CountAuctionsBySellerAsync(string? sellerId);
     }
 }

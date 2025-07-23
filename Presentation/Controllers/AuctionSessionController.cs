@@ -54,6 +54,7 @@ namespace Presentation.Controllers
             
         }
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CheckBalance(int auctionId)
         {
             var buyerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -71,7 +72,7 @@ namespace Presentation.Controllers
                 message = isEnough ? "" : "Số dư của bạn không đủ (" + balance.ToString("N0") + " đ). Cần tối thiểu " + requiredAmount.ToString("N0") + " đ!"
             });
         }
-
+        [Authorize]
         public async Task<IActionResult> Wins()
         {
             var buyerId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -83,7 +84,7 @@ namespace Presentation.Controllers
                 ProductName = o.Product?.Name,
                 ProductImage = o.Product?.ImageUrl ?? "/images/no-img.png",
                 FinalPrice = o.Total,
-                SellerName = o.Seller?.Account?.Fullname ?? o.SellerId,
+                SellerName = o.Seller?.Account?.UserName ?? o.SellerId,
                 Paid = o.OrderStatus == OrderStatus.Paid
             }).ToList();
 

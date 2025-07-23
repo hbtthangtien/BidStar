@@ -21,6 +21,13 @@ namespace Application.Services
             _cloudineryService = cloudinary;
         }
 
+        public async Task<dynamic> CountProductsBySellerAsync(string? sellerId)
+        {
+            var products = await _unitOfWork.Products.GetAllAsync();
+            var numberOfProduct = products.Where(e => e.SellerId == sellerId).Count();
+            return numberOfProduct;
+        }
+
         public async Task CreateProductBySellerId(ProductDTOCreate dto, IFormFile file)
         {
             string imageUrl =await _cloudineryService.UploadImageFileAsync(file);

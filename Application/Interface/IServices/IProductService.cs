@@ -20,5 +20,6 @@ namespace Application.Interface.IServices
 
         public Task DeleteProductById(int id);
         public Task<List<ProductDTO>> GetProductsPendingBySellerIdAsync(string sellerId);
+        Task<dynamic> CountProductsBySellerAsync(string? sellerId);
     }
 }

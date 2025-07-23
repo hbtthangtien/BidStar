@@ -21,6 +21,13 @@ namespace Application.Services
             throw new NotImplementedException();
         }
 
+        public async Task<dynamic> CountOrdersBySellerAsync(string? sellerId)
+        {
+            var orders = await _unitOfWork.Orders.GetAllAsync();
+            var count = orders.Where(e => e.SellerId == sellerId).Count();
+            return count;
+        }
+
         public async Task CreateOrder(int auctionId)
         {
             var session = await _unitOfWork.AuctionSessions.GetSingle(e => e.Id == auctionId);
@@ -36,6 +43,13 @@ namespace Application.Services
             };
             await _unitOfWork.Orders.AddAsync(order);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<List<Order>> GetOrdersBySellerAsync(string sellerId)
+        {
+            var orders = await _unitOfWork.Orders.GetAllAsync();
+            orders = orders.Where(e => e.SellerId == sellerId && e.OrderStatus == Domain.Enum.OrderStatus.Paid).ToList();
+            return (List<Order>)orders;
         }
 
         public async Task<List<Order>> GetWinOrder(string userId)

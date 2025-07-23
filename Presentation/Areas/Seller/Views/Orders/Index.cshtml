@@ -1,0 +1,74 @@
+﻿@model List<OrderForSellerVM>
+@using Domain.Enum
+@using Presentation.Areas.Seller.Models
+@{
+    ViewData["Title"] = "Đơn hàng đã bán";
+}
+
+<div class="container py-4">
+    <h2 class="mb-4 fw-bold" style="color:#1976d2">
+        <i class="bi bi-card-checklist me-2"></i>Đơn hàng đã bán
+    </h2>
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">Bạn chưa bán được đơn hàng nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Sản phẩm</th>
+                        <th>Khách mua</th>
+                        <th>Thành tiền</th>
+                        <th>Ngày đặt</th>
+                        <th>Trạng thái</th>
+                        <th>Phiên đấu giá</th>
+                        <th>Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td class="text-center fw-bold">#@o.OrderId</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@o.ProductImage" style="width:56px;height:42px;object-fit:cover;border-radius:10px;margin-right:10px" />
+                                    <span>@o.ProductName</span>
+                                </div>
+                            </td>
+                            <td>@o.BuyerName</td>
+                            <td class="fw-semibold text-primary">@o.Total.ToString("N0") đ</td>
+                            <td>
+                                <span class="small">@o.DateOrder</span>
+                            </td>
+                            <td>
+                                <span class="badge
+                            @(o.Status == OrderStatus.Paid ? "bg-success"
+                             : o.Status == OrderStatus.Completed ? "bg-secondary"
+                             : o.Status == OrderStatus.Shipped ? "bg-warning text-dark"
+                             : o.Status == OrderStatus.Pending ? "bg-primary"
+                             : "bg-danger")">
+                                    @o.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-search"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary">
+                                    Xem
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
