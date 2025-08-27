@@ -12,7 +12,7 @@ namespace Application.Interface.IServices
     {
         public Task<List<ProductDTO>> GetProductsBySellerIdAsync(string sellerId);
 
-        public Task CreateProductBySellerId(ProductDTOCreate dto, IFormFile file);
+        public Task CreateProductBySellerId(ProductDTOCreate dto, List<IFormFile> files);
 
         public Task<ProductDTODetail> GetProductDetailById(int id);
 

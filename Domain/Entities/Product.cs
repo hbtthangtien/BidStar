@@ -31,6 +31,6 @@ namespace Domain.Entities
 
         public virtual Category? Category { get; set;}
 
-
+        public virtual ICollection<ImageProduct> ImageProducts { get; set; } = new List<ImageProduct>();
     }
 }

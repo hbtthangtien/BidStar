@@ -63,7 +63,7 @@ namespace Persistence.Repository
 
         public async Task<T?> GetSingle(Expression<Func<T, bool>> expression)
         {
-            return await _dbSet.SingleOrDefaultAsync(expression);
+            return await _dbSet.FirstOrDefaultAsync(expression);
         }
 
         public async Task<bool> HasAnyAsync(Expression<Func<T, bool>> expression)

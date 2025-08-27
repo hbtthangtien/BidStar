@@ -34,11 +34,11 @@ namespace Presentation.Areas.Seller.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(ProductDTOCreate dto, IFormFile ImageFile)
+        public async Task<IActionResult> Create(ProductDTOCreate dto, List<IFormFile> ImageFiles)
         {
             var sellerId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             dto.SellerId = sellerId;
-            await _productService.CreateProductBySellerId(dto,ImageFile);
+            await _productService.CreateProductBySellerId(dto,ImageFiles);
             return RedirectToAction("Index");
         }
         [HttpGet]

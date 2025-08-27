@@ -51,7 +51,7 @@ namespace Application.Services
         private async Task<bool> CheckValidBidAmount(double amount, int auctionId)
         {
             var check  = await _unitOfWork.Bids.GetSingle(e => e.BidAmount >= amount && e.Id == auctionId);
-            return check == null;
+            return check != null;
 
         }
         private async Task EnsureBalanceValid(double amount, string userId,int auctionId)

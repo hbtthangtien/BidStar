@@ -183,6 +183,10 @@ namespace Persistence.DatabaseConfig
                 entity.HasOne(e => e.Category)
                     .WithMany(e => e.Products)
                     .HasForeignKey(e => e.CategoryId);
+
+                entity.HasMany(e => e.ImageProducts)
+                    .WithOne(e => e.Product)
+                    .HasForeignKey(e => e.ProductId);
             });
 
             builder.Entity<Seller>(entity =>

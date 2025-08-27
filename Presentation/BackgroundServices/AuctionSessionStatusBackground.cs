@@ -25,11 +25,11 @@ namespace Presentation.BackgroundServices
                 var scheduler = scope.ServiceProvider.GetRequiredService<AuctionSessionScheduler>();
                 var now = DateTime.Now;
                 var auctions = db.AuctionSessions
-                    .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Scheduled && a.StartTime <= now)
+                    .Where(a => a.AuctionSatus == AuctionSatus.Scheduled && a.StartTime <= now)
                     .ToList();
                 foreach (var a in auctions) a.AuctionSatus = AuctionSatus.Ongoing;
                 var auctions2 = db.AuctionSessions
-                    .Where(a => a.AuctionSatus == Domain.Enum.AuctionSatus.Ongoing && a.EndTime <= now)
+                    .Where(a => a.AuctionSatus == AuctionSatus.Ongoing && a.EndTime <= now)
                     .ToList();
                 foreach (var a in auctions2)
                 {

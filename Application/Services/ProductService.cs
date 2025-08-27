@@ -28,11 +28,24 @@ namespace Application.Services
             return numberOfProduct;
         }
 
-        public async Task CreateProductBySellerId(ProductDTOCreate dto, IFormFile file)
+        public async Task CreateProductBySellerId(ProductDTOCreate dto, List<IFormFile> files)
         {
-            string imageUrl =await _cloudineryService.UploadImageFileAsync(file);
             var product = _mapper.Map<Product>(dto);
-            product.ImageUrl = imageUrl;
+            var listImage = new List<ImageProduct>();
+            foreach (var file in files)
+            {
+                string imageUrl = await _cloudineryService.UploadImageFileAsync(file);
+                product.ImageUrl = imageUrl;
+                var image = new ImageProduct
+                {
+                    ProductId = product.Id,
+                    Url = imageUrl,
+                };
+                listImage.Add(image);
+            }
+            product.ImageProducts = listImage;
+            
+            
             product.CreatedDate = DateTime.Now;
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.CommitAsync(); 
